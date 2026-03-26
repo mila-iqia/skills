@@ -8,7 +8,7 @@ A collection of Claude Code skills for Mila researchers, distributed as a plugin
 
 In any Claude Code session:
 ```
-/plugin marketplace add mila-umontreal/skills
+/plugin marketplace add mila-iqia/skills
 ```
 
 ### Option B — manual
@@ -20,7 +20,7 @@ Add to `~/.claude/settings.json`:
     "mila-skills": {
       "source": {
         "source": "github",
-        "repo": "mila-umontreal/skills"
+        "repo": "mila-iqia/skills"
       }
     }
   }
