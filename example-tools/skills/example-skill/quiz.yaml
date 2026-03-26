@@ -1,0 +1,26 @@
+# These questions test knowledge provided by the skill, not general facts about Claude Code.
+# Each answer requires having read the specific content of SKILL.md.
+
+- question: "If you run '/example-skill Paris France', what value will $ARGUMENTS have inside the skill?"
+  options:
+    A: "Paris"
+    B: "France"
+    C: "Paris France"
+    D: "/example-skill Paris France"
+  answer: C
+
+- question: "According to the example skill, what variable gives you access to the text typed after the skill name?"
+  options:
+    A: "$INPUT"
+    B: "$ARGS"
+    C: "$PARAMS"
+    D: "$ARGUMENTS"
+  answer: D
+
+- question: "When creating a new skill based on this template, what part of the file should you replace with your own content?"
+  options:
+    A: "Only the frontmatter fields"
+    B: "The instructions in the body of the file"
+    C: "The $ARGUMENTS variable references"
+    D: "The file name"
+  answer: B

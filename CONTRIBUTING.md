@@ -15,8 +15,9 @@
 
    Instructions for Claude go here...
    ```
-3. Update the plugin's version in `<plugin-name>/.claude-plugin/plugin.json`.
-4. Open a PR.
+3. Add a `quiz.yaml` file with multiple-choice questions that test the skill (see [Quiz requirement](#quiz-requirement)).
+4. Update the plugin's version in `<plugin-name>/.claude-plugin/plugin.json`.
+5. Open a PR.
 
 ## Adding a new plugin (topic group)
 
@@ -46,6 +47,45 @@
    }
    ```
 4. Open a PR.
+
+## Quiz requirement
+
+Every skill must include a `quiz.yaml` alongside its `SKILL.md`. CI uses [docmetrics](https://github.com/mila-iqia/docmetrics) to verify that the skill content actually helps an LLM answer the questions — if the score doesn't improve when the skill is provided as context, the PR fails.
+
+**What makes a good quiz question:**
+
+Questions should test the *knowledge the skill provides*, not describe what the skill does. Ask about specific facts, configurations, or procedures documented in the skill — things a user couldn't answer without having read it.
+
+For example, a skill about the Mila Slurm cluster might have:
+```yaml
+- question: "Which Slurm partition should you use on the Mila cluster for short jobs with up to 4 GPUs?"
+  options:
+    A: "main"
+    B: "long"
+    C: "short-unkillable"
+    D: "cpu_jobs"
+  answer: C
+```
+
+That's a good question because the answer is a concrete fact from the skill's content. A bad version would be "What does this skill help you do?" — that's describing the skill, not testing the knowledge inside it.
+
+**Rules:**
+- 3–5 questions is sufficient
+- Each question needs 4 options and a correct answer letter
+- Prefer specific facts over abstract descriptions
+
+**Format:**
+```yaml
+- question: "..."
+  options:
+    A: "..."
+    B: "..."
+    C: "..."
+    D: "..."
+  answer: B
+```
+
+See [`example-tools/skills/example-skill/quiz.yaml`](example-tools/skills/example-skill/quiz.yaml) for a working example.
 
 ## Skill file reference
 

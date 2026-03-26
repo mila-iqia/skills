@@ -1,0 +1,86 @@
+name: Skill CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '**/skills/*/SKILL.md'
+      - '**/skills/*/quiz.yaml'
+  pull_request:
+    paths:
+      - '**/skills/*/SKILL.md'
+      - '**/skills/*/quiz.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find skill directories to test
+        id: find-skills
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            DIRS=$(git diff --name-only "origin/${{ github.base_ref }}" HEAD \
+              | grep -E '.*/skills/.*/SKILL\.md|.*/skills/.*/quiz\.yaml' \
+              | sed 's|/[^/]*$||' | sort -u)
+          else
+            DIRS=$(find . -path '*/skills/*/SKILL.md' | sed 's|/SKILL\.md$||' | sort -u)
+          fi
+          echo "dirs<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$DIRS" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Check each changed skill has a quiz.yaml
+        run: |
+          MISSING=0
+          while IFS= read -r dir; do
+            [ -z "$dir" ] && continue
+            if [ ! -f "$dir/quiz.yaml" ]; then
+              echo "ERROR: missing $dir/quiz.yaml"
+              MISSING=1
+            fi
+          done <<< "${{ steps.find-skills.outputs.dirs }}"
+          exit $MISSING
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Install docmetrics
+        # TODO: pin to a release once mila-iqia/docmetrics#13 is merged
+        run: pip install "git+https://github.com/mila-iqia/docmetrics.git@feat/docs-file"
+
+      - name: Run docmetrics and assert skill improves score
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          FAILED=0
+          while IFS= read -r dir; do
+            [ -z "$dir" ] && continue
+            echo "=== Testing: $dir ==="
+            python -m docmetrics \
+              --questions "$dir/quiz.yaml" \
+              --docs-file "$dir/SKILL.md" \
+              --model gemini-2.5-flash \
+              --output-format json > /tmp/result.json
+            cat /tmp/result.json
+            WITH=$(python3 -c "import json; d=json.load(open('/tmp/result.json')); print(d['with_docs']['score'])")
+            WITHOUT=$(python3 -c "import json; d=json.load(open('/tmp/result.json')); print(d['without_docs']['score'])")
+            PASS=$(awk "BEGIN { print ($WITH > $WITHOUT) ? 1 : 0 }")
+            if [ "$PASS" != "1" ]; then
+              echo "FAIL: score did not improve (with_docs=$WITH, without_docs=$WITHOUT)"
+              echo "Ensure quiz questions can only be answered by reading SKILL.md."
+              FAILED=1
+            else
+              echo "PASS: $WITHOUT -> $WITH"
+            fi
+          done <<< "${{ steps.find-skills.outputs.dirs }}"
+          exit $FAILED
