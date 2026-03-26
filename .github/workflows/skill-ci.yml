@@ -62,8 +62,6 @@ jobs:
         run: pip install "git+https://github.com/mila-iqia/docmetrics.git@master"
 
       - name: Run docmetrics for each skill
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           while IFS= read -r dir; do
             [ -z "$dir" ] && continue
@@ -75,7 +73,8 @@ jobs:
             python -m docmetrics \
               --questions "$dir/quiz.yaml" \
               --docs-file "$dir/SKILL.md" \
-              --model gemini-2.5-flash \
+              --model ollama:gpt-oss:120b \
+              --ollama-url=dgx:11434 \
               --output-format json > "/tmp/skill-results/$SLUG/current.json"
 
             # Base branch: with old SKILL.md (only for modified skills on PRs)
@@ -86,7 +85,8 @@ jobs:
                 python -m docmetrics \
                   --questions "$dir/quiz.yaml" \
                   --docs-file /tmp/base-skill.md \
-                  --model gemini-2.5-flash \
+                  --model ollama:gpt-oss:120b \
+                  --ollama-url=dgx:11434 \
                   --output-format json > "/tmp/skill-results/$SLUG/base.json"
               fi
             fi
