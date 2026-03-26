@@ -1,6 +1,6 @@
 # Mila Skills Marketplace
 
-A collection of Claude Code skills for Mila researchers, distributed as a plugin marketplace.
+A collection of Claude Code skills for (and by) Mila researchers, distributed as a plugin marketplace.
 
 ## Setup (one-time)
 
