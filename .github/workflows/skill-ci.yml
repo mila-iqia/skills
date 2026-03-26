@@ -11,6 +11,10 @@ on:
       - '**/skills/*/SKILL.md'
       - '**/skills/*/quiz.yaml'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -58,29 +62,60 @@ jobs:
         # TODO: pin to a release once mila-iqia/docmetrics#13 is merged
         run: pip install "git+https://github.com/mila-iqia/docmetrics.git@feat/docs-file"
 
-      - name: Run docmetrics and assert skill improves score
+      - name: Run docmetrics for each skill
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          FAILED=0
           while IFS= read -r dir; do
             [ -z "$dir" ] && continue
-            echo "=== Testing: $dir ==="
+            SLUG=$(echo "$dir" | sed 's|^\./||; s|/|__|g')
+            mkdir -p "/tmp/skill-results/$SLUG"
+            echo "=== Evaluating: $dir ==="
+
+            # Current branch: baseline + with current SKILL.md
             python -m docmetrics \
               --questions "$dir/quiz.yaml" \
               --docs-file "$dir/SKILL.md" \
               --model gemini-2.5-flash \
-              --output-format json > /tmp/result.json
-            cat /tmp/result.json
-            WITH=$(python3 -c "import json; d=json.load(open('/tmp/result.json')); print(d['with_docs']['score'])")
-            WITHOUT=$(python3 -c "import json; d=json.load(open('/tmp/result.json')); print(d['without_docs']['score'])")
-            PASS=$(awk "BEGIN { print ($WITH > $WITHOUT) ? 1 : 0 }")
-            if [ "$PASS" != "1" ]; then
-              echo "FAIL: score did not improve (with_docs=$WITH, without_docs=$WITHOUT)"
-              echo "Ensure quiz questions can only be answered by reading SKILL.md."
-              FAILED=1
-            else
-              echo "PASS: $WITHOUT -> $WITH"
+              --output-format json > "/tmp/skill-results/$SLUG/current.json"
+
+            # Base branch: with old SKILL.md (only for modified skills on PRs)
+            if [ "${{ github.event_name }}" == "pull_request" ]; then
+              BASE_REF="origin/${{ github.base_ref }}"
+              if git show "$BASE_REF:$dir/SKILL.md" > /tmp/base-skill.md 2>/dev/null; then
+                echo "  Base branch SKILL.md found, evaluating..."
+                python -m docmetrics \
+                  --questions "$dir/quiz.yaml" \
+                  --docs-file /tmp/base-skill.md \
+                  --model gemini-2.5-flash \
+                  --output-format json > "/tmp/skill-results/$SLUG/base.json"
+              fi
             fi
           done <<< "${{ steps.find-skills.outputs.dirs }}"
-          exit $FAILED
+
+      - name: Format and post PR comment
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/scripts/format_skill_comment.py \
+            --results-dir /tmp/skill-results > /tmp/comment.md || true
+
+          REPO="${{ github.repository }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          EXISTING_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '.[] | select(.body | contains("<!-- skill-ci -->")) | .id' \
+            | head -1)
+
+          if [ -n "$EXISTING_ID" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$EXISTING_ID" \
+              -f body="$(cat /tmp/comment.md)"
+          else
+            gh api --method POST "repos/$REPO/issues/$PR_NUMBER/comments" \
+              -f body="$(cat /tmp/comment.md)"
+          fi
+
+      - name: Check results
+        run: |
+          python .github/scripts/format_skill_comment.py \
+            --results-dir /tmp/skill-results > /dev/null
