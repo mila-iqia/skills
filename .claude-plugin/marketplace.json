@@ -1,0 +1,14 @@
+{
+  "name": "mila-skills",
+  "owner": { "name": "Mila" },
+  "metadata": {
+    "description": "Skill marketplace for Mila researchers"
+  },
+  "plugins": [
+    {
+      "name": "example-tools",
+      "source": "./example-tools",
+      "description": "Example plugin demonstrating the marketplace structure"
+    }
+  ]
+}
