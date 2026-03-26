@@ -59,8 +59,7 @@ jobs:
           python-version: '3.14'
 
       - name: Install docmetrics
-        # TODO: pin to a release once mila-iqia/docmetrics#13 is merged
-        run: pip install "git+https://github.com/mila-iqia/docmetrics.git@feat/docs-file"
+        run: pip install "git+https://github.com/mila-iqia/docmetrics.git@master"
 
       - name: Run docmetrics for each skill
         env:
