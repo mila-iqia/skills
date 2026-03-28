@@ -1,0 +1,5 @@
+{
+  "name": "mila-tools",
+  "version": "1.0.0",
+  "description": "Skills for Mila cluster users: account setup, local setup, SSH connection, and running jobs"
+}

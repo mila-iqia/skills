@@ -1,0 +1,143 @@
+- question: "What compute resources are available for Mila students?"
+  options:
+    A: "Only legacy CPU nodes featuring integrated graphics capabilities"
+    B: "A heterogeneous, Slurm-managed cluster featuring multi-core CPUs and various generations of GPUs (including H100, L40S, A100, and RTX8000)"
+    C: "Distributed cloud computing credits restricted to AWS infrastructure exclusively"
+    D: "A single homogeneous supercomputer entirely composed of V100 architectures"
+    E: "Experimental quantum computing accelerators only"
+  answer: B
+
+- question: "How many GPUs am I allowed to use at any given time for interactive development?"
+  options:
+    A: "You are restricted to exactly zero GPUs for interactive sessions to save resources"
+    B: "Exactly 8 GPUs at all times, regardless of the task"
+    C: "Mila attempts to honor a strict guarantee of giving at minimum one GPU per student, all the time, specifically for interactive mode usage"
+    D: "You are restricted to using GPUs during non-interactive batch jobs only"
+    E: "As many as you want without any queuing limits"
+  answer: C
+
+- question: "Where should I store datasets on the Mila cluster to ensure maximum I/O performance during a training job?"
+  options:
+    A: "$HOME"
+    B: "$SLURM_TMPDIR"
+    C: "/network/projects"
+    D: "$ARCHIVE"
+    E: "$SCRATCH"
+  answer: B
+
+- question: "Where should I setup my code repositories on the Mila cluster?"
+  options:
+    A: "$HOME"
+    B: "$SLURM_TMPDIR"
+    C: "/network/datasets"
+    D: "$SCRATCH"
+    E: "B and D"
+  answer: A
+
+- question: "How can I use Visual Studio Code to develop code on the Mila cluster?"
+  options:
+    A: "By installing it locally on your machine and utilizing the 'Remote-SSH' extension to connect seamlessly to `mila-cpu` or environments instantiated by `mila code`"
+    B: "By running the heavy VSCode graphical user interface directly on the login node"
+    C: "VSCode is strictly banned; researchers are forced to use terminal-based vim"
+    D: "By downloading a specific VSCode cluster software module and executing it locally"
+    E: "By using the dashboard.server.mila.quebec web-based IDE"
+  answer: A
+
+- question: "Can I run claude on the Mila cluster login nodes?"
+  options:
+    A: "Yes, it is highly encouraged to run heavy agentic processes on the login node"
+    B: "Yes, as long as it is a short, isolated prompt"
+    C: "No, running heavy, persistent, or agentic processes (like Claude Code) on shared login nodes is strictly prohibited as it heavily strains shared CPU and RAM resources"
+    D: "Yes, but only if you execute it using the `--dangerously-skip-permissions` flag"
+    E: "A and D"
+  answer: C
+
+- question: "First Steps: How do I execute my first job on the cluster?"
+  options:
+    A: "By running the python script directly on the login node and ignoring the warnings"
+    B: "By deeply reading the 'Run Your First Job' minimal example, preparing a correctly formatted `job.sh` shell script detailing resource requests, and submitting it to the active queue via `sbatch`"
+    C: "By physically pressing the execute button located on the Grafana dashboard"
+    D: "By calling the IDT team and reading the code to them over the phone"
+    E: "By using the `srun` command without allocating any hardware resources first"
+  answer: B
+
+- question: "First Steps: How do I train my first model on the cluster?"
+  options:
+    A: "By running the training code directly on your local laptop and connecting to the data via a slow VPN"
+    B: "By strictly following the 'Train Your First Model' guide, which comprehensively details allocating a GPU, optimally staging the shared CIFAR-10 dataset exclusively into `$SLURM_TMPDIR`, and seamlessly launching a batch job"
+    C: "By copying the massive network weights directly to your `$HOME` directory and executing it entirely on the login node"
+    D: "By utilizing the external TamIA cluster interactively"
+    E: "By commanding the Claude Code agent to execute it via the `--dangerously-skip-permissions` flag"
+  answer: B
+
+- question: "What is the difference between an interactive and batch job?"
+  options:
+    A: "Batch jobs strictly require GPUs; interactive jobs run exclusively on CPUs only"
+    B: "Interactive jobs provide a live, responsive terminal session for real-time debugging and command execution; batch jobs run autonomously in the background via submitted shell scripts (`sbatch`)"
+    C: "Interactive jobs are entirely immune to preemption; batch jobs are not"
+    D: "Interactive jobs can only execute on TamIA; batch jobs execute strictly on Mila"
+    E: "There is absolutely no functional difference between the two paradigms"
+  answer: B
+
+- question: "What is a Slurm cluster?"
+  options:
+    A: "A highly specialized database structure utilized exclusively for storing large image datasets"
+    B: "A massive system managed by a workload/batch scheduler where users must explicitly allocate precise resources (like CPUs, memory, and GPUs) before executing jobs, thereby preventing catastrophic hardware overallocation"
+    C: "A makeshift cluster of purely consumer-grade laptops connected via local WiFi"
+    D: "An interactive frontend website built strictly for creating AI-generated art"
+    E: "A specific, deprecated type of Python virtual environment"
+  answer: B
+
+- question: "What is a Compute Node?"
+  options:
+    A: "A node explicitly reserved for handling web traffic and routing SSH tunneling"
+    B: "The exact node you first land on when typing `ssh mila` in your local terminal"
+    C: "A dedicated, isolated server within the broader cluster where actual physical resources (CPUs, GPUs, RAM) are allocated exclusively to your specific job via the Slurm workload scheduler"
+    D: "A node strictly utilized for storing long-term, cold archive data"
+    E: "B and D"
+  answer: C
+
+- question: "Why do I need to allocate resources before I can run a job?"
+  options:
+    A: "To inform the centralized billing department exactly how much to charge your credit card"
+    B: "Because the Slurm workload manager relies on this to prevent users from overloading shared hardware, guaranteeing you receive dedicated, un-interfered access to the specific CPUs and GPUs requested"
+    C: "Because the underlying C++ compiler will categorically refuse to execute unless you provide the exact execution time"
+    D: "To strictly satisfy external DRAC governmental compliance laws"
+    E: "It is an outdated, legacy rule that no one formally follows anymore"
+  answer: B
+
+- question: "My jobs are taking a long time to start running on the cluster. What can I do?"
+  options:
+    A: "Submit the exact same job script 100 times to overwhelm the scheduler and force it to pick it up"
+    B: "Ensure you are utilizing optimal resource requests, avoid relying solely on heavily constrained 'unkillable' partitions, and verify actual GPU availability via the Grafana dashboard"
+    C: "Run the massive training script directly on the login node instead of waiting in the queue"
+    D: "Email the IT team demanding they manually override the queue to start your job"
+    E: "Use the `--dangerously-skip-permissions` flag to bypass the Slurm wait times"
+  answer: B
+
+- question: "Why are my jobs being interrupted on the Mila cluster before they have a chance to finish?"
+  options:
+    A: "Because you accidentally used the `short-unkillable` partition"
+    B: "Because of strict cluster preemption policies (if operating on a preemptible partition), reaching the explicitly requested maximum time limit, or encountering a fatal CUDA OOM (Out of Memory) error"
+    C: "Because the cluster automatically resets and purges all jobs every hour on the hour"
+    D: "Because an administrator physically pressed the power button on the server rack"
+    E: "Because you optimally stored your training data in `$SLURM_TMPDIR`"
+  answer: B
+
+- question: "Which of the following is NOT a good practice for development workflow on the Mila cluster?"
+  options:
+    A: "Utilizing `mila code` to securely and optimally attach a VSCode instance directly to a GPU compute node"
+    B: "Preemptively copying massive datasets to the local NVMe `$SLURM_TMPDIR` before beginning a heavy training loop"
+    C: "Employing `uv` to rapidly resolve and cleanly install Python package dependencies"
+    D: "Executing a 12-hour PyTorch distributed training loop directly on the shared login node to entirely avoid waiting in the Slurm queue"
+    E: "Systematically using proper checkpointing logic to continuously save model state dicts to `$SCRATCH` in case of aggressive preemption"
+  answer: D
+
+- question: "Who can help me with my technical questions, for example, to help me optimize my pytorch code?"
+  options:
+    A: "The IT support desk"
+    B: "The IDT team via their established office hours or specialized Slack channels"
+    C: "The network infrastructure administrators"
+    D: "The desk reservation policy committee"
+    E: "None of the above"
+  answer: B
