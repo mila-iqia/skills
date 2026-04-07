@@ -4,11 +4,12 @@ description: >-
   Use this skill when the user asks about connecting to the Mila cluster via
   SSH, verifying the connection, entering an OTP, or troubleshooting
   connection failures. Trigger phrases include: "How do I connect to the
-  cluster", "How do I SSH into the cluster", "ssh mila", "How do I verify
-  my connection", "I can't connect", "connection refused", "OTP",
-  "one-time password", "The login node banner does not appear",
-  "Not prompted for OTP", "How do I install uv on the cluster",
-  "I'm connected, what's next".
+  cluster", "How do I SSH into the cluster", "ssh mila",
+  "login.server.mila.quebec", "How do I verify my connection",
+  "I can't connect", "connection refused", "permission denied",
+  "host key verification failed", "OTP", "one-time password",
+  "The login node banner does not appear", "Not prompted for OTP",
+  "How do I install uv on the cluster", "I'm connected, what's next".
 version: 1.0.0
 argument-hint: <connect|troubleshoot>
 ---
@@ -19,25 +20,26 @@ This skill guides users through connecting to the Mila cluster for the first
 time, entering the OTP from their authenticator app, and troubleshooting
 common connection failures.
 
+## Base policies
+
+At the start of each response, use the Read tool to load
+`.claude/skills/mila-base/SKILL.md` and apply all policies defined there
+before proceeding with the workflow below.
+
 ## Reference documentation
 
-Primary source: **https://docs.mila.quebec/Userguide_quick_start/**
+Primary source: **https://docs.mila.quebec/getting_started/index**
 — sections "Verify your connection" and "Install uv on the cluster".
 
-## Command execution
+## Discover documentation
 
-Whenever a terminal command is presented to the user, display it in a code
-block as usual. If the command can be run directly in the current shell
-(without SSH-ing into another machine), also ask:
+Use the WebSearch tool with this query to find the current URL of the primary
+source above:
 
-> Would you like me to run this command for you?
+    site:docs.mila.quebec "__skill-mila-connect-cluster"
 
-If the user says yes, execute it using the Bash tool. If the user says no
-or does not respond, continue guiding them to run it themselves.
-
-Do NOT offer to run commands that require an active SSH connection to another
-machine (e.g., commands shown as running on the cluster, inside the VSCode
-remote terminal, or via `srun`/`sbatch`).
+Use the URL from the search result in the WebFetch steps below. If the search
+returns no results, fall back to the hardcoded URL in "Reference documentation".
 
 ## Workflow
 
@@ -52,7 +54,7 @@ If any prerequisite is missing, point to the appropriate skill first.
 
 ### Step 2: Fetch the documentation
 
-Use the WebFetch tool to fetch **https://docs.mila.quebec/Userguide_quick_start/** and locate the
+Use the WebFetch tool to fetch **https://docs.mila.quebec/getting_started/index** and locate the
 "Verify your connection" section.
 
 ### Step 3: Guide through the SSH connection
@@ -93,7 +95,13 @@ Contact IT support at https://it-support.mila.quebec if the issue persists.
 
 ### Step 5: Install uv on the cluster
 
-Once connected, guide the user to install `uv` on the cluster (login node).
+Once the connection is confirmed, `uv` needs to be installed on the cluster
+before running any jobs. Guide the user to install it now while already on the
+login node.
+
+Note: the following commands run **inside the SSH session** (on the cluster
+login node) — do not offer to run them via the Bash tool.
+
 Use the WebFetch tool to fetch **https://docs.astral.sh/uv/getting-started/installation/** for
 up-to-date installation instructions. The cluster runs Linux, so follow
 the Linux installation steps.
