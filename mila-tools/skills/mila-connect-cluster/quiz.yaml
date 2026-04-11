@@ -6,8 +6,11 @@
     D: "Using a standard FTP client only"
     E: "By connecting directly through the dashboard.server.mila.quebec diagnostic URL"
   answer: A
+  skills:
+    - mila-connect-cluster
+    - mila-local-setup
 
-- question: "First Steps: How do I connect to the cluster?"
+- question: "How do I connect to the cluster?"
   options:
     A: "By navigating a web browser to a hidden IP address"
     B: "By utilizing `ssh mila` from your local terminal (if manually configured) or by leveraging the automated tools provided by installing the `milatools` framework locally"
@@ -15,8 +18,11 @@
     D: "By running `sbatch connect.sh`"
     E: "A and B"
   answer: B
+  skills:
+    - mila-connect-cluster
+    - mila-local-setup
 
-- question: "First Steps: How do I install uv on the cluster?"
+- question: "How do I install uv on the cluster?"
   options:
     A: "By running the curl command from the uv docs on a login node"
     B: "By submitting an IT ticket demanding they install it globally for all users"
@@ -24,6 +30,8 @@
     D: "By using the `module load uv` command on the login node"
     E: "The `uv` package manager is strictly banned on the cluster infrastructure"
   answer: A
+  skills:
+    - mila-connect-cluster
 
 - question: "If I have some SSH issues when connecting to compute nodes, which Slack channel should I ask for help in?"
   options:
@@ -33,6 +41,8 @@
     D: "#mila-cluster"
     E: "#random"
   answer: D
+  skills:
+    - mila-connect-cluster
 
 - question: "Is it okay to direct-message an IT or IDT team member on Slack if I have a problem?"
   options:
@@ -42,6 +52,8 @@
     D: "Yes, but exclusively for advanced PyTorch bugs"
     E: "No, the entire Slack platform is strictly forbidden for any technical communication"
   answer: B
+  skills:
+    - mila-connect-cluster
 
 - question: "Who should I reach out to if I have trouble connecting to the cluster with `mila code`?"
   options:
@@ -51,6 +63,9 @@
     D: "Compute Canada"
     E: "No one, the specific command has been deprecated and is no longer supported"
   answer: C
+  skills:
+    - mila-connect-cluster
+    - mila-run-jobs
 
 - question: "Can I run Visual Studio Code on the Mila cluster login nodes?"
   options:
@@ -60,6 +75,9 @@
     D: "No, Visual Studio Code is strictly banned across the entire Mila organizational infrastructure"
     E: "Yes, but only if you launch the GUI via the external DRAC portal"
   answer: B
+  skills:
+    - mila-connect-cluster
+    - mila-run-jobs
 
 - question: "What is a Login node?"
   options:
@@ -69,3 +87,6 @@
     D: "A node that is permanently and physically disconnected from the internet"
     E: "A massive storage array that exclusively holds the `$SCRATCH` partition"
   answer: B
+  skills:
+    - mila-connect-cluster
+    - mila-run-jobs

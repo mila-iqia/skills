@@ -1,4 +1,4 @@
-- question: "First Steps: How do I install wsl?"
+- question: "How do I install WSL?"
   options:
     A: "By downloading the WSL binary directly from the Mila dashboard and transferring it via SCP"
     B: "By opening the Windows PowerShell as an administrator and executing the `wsl --install` command, fulfilling the POSIX prerequisite for local Windows-based development before connecting"
@@ -6,8 +6,10 @@
     D: "By submitting an IT support ticket requesting them to remotely install it on your laptop"
     E: "By using the `module load wsl` command on the cluster login node"
   answer: B
+  skills:
+    - mila-local-setup
 
-- question: "First Steps: How do I install uv on my local machine?"
+- question: "How do I install uv on my local machine?"
   options:
     A: "You must manually compile it from source utilizing a C++ toolchain"
     B: "By strictly following the standard installation instructions corresponding to your local OS architecture as indicated in the 'Get Started' section of the Mila docs before establishing a cluster connection"
@@ -15,8 +17,10 @@
     D: "By explicitly asking the IDT team to remotely install it for you"
     E: "Exclusively through the DRAC web portal"
   answer: B
+  skills:
+    - mila-local-setup
 
-- question: "First Steps: What is the preferred way to install milatools?"
+- question: "What is the preferred way to install milatools?"
   options:
     A: "By running the `uv tool install milatools` command on a local terminal"
     B: "By running the command `pip install -U milatools` within your local terminal"
@@ -24,8 +28,10 @@
     D: "By officially opening an IT support ticket and requesting the execution binary via email"
     E: "Milatools is a proprietary software that cannot be installed by users; it is only available on the cluster login nodes by default"
   answer: A
+  skills:
+    - mila-local-setup
 
-- question: "First Steps: How do I configure milatools?"
+- question: "How do I configure milatools?"
   options:
     A: "By manually writing over 100 lines of complex XML configuration files"
     B: "By running the `mila init` command locally and carefully following the interactive terminal prompts to effortlessly setup all required SSH configurations and proxy jumps"
@@ -33,6 +39,8 @@
     D: "By setting up an active AIP allocation"
     E: "C and D"
   answer: B
+  skills:
+    - mila-local-setup
 
 - question: "Should I run Mila init every day? Or just once?"
   options:
@@ -42,6 +50,8 @@
     D: "Only specifically when the core cluster crashes"
     E: "Every single time before you submit a batch job via `sbatch`"
   answer: C
+  skills:
+    - mila-local-setup
 
 - question: "Should I use Conda, pip/virtualenv, or uv?"
   options:
@@ -51,3 +61,5 @@
     D: "None of them; the Python programming language is unsupported on the cluster"
     E: "Use pip exclusively, as `uv` is fundamentally incompatible with the Slurm scheduler"
   answer: B
+  skills:
+    - mila-local-setup

@@ -6,6 +6,19 @@
     D: "Students supervised by any affiliated or non-core professor"
     E: "Undergraduate interns"
   answer: A
+  skills:
+    - mila-account-setup
+
+- question: "How do I obtain my Mila account?"
+  options:
+    A: "By paying a monthly subscription fee via the official Mila website"
+    B: "By successfully passing a rigorous technical interview with a core professor"
+    C: "By directly contacting Mila systems administrators and successfully completing the required IT Onboarding Training quiz, provided you meet the strict affiliation requirements"
+    D: "By creating an account entirely freely through GitHub SSO"
+    E: "Accounts are automatically and dynamically generated for all university students residing in Canada"
+  answer: C
+  skills:
+    - mila-account-setup
 
 - question: "How do I get access to the Mila cluster?"
   options:
@@ -15,33 +28,66 @@
     D: "By purchasing a monthly allocation token directly from DRAC"
     E: "By logging into a compute node using guest credentials and creating a directory"
   answer: B
+  skills:
+    - mila-account-setup
 
-- question: "First Steps: How do I obtain my Mila account?"
+- question: "How do I setup MFA to access the cluster?"
   options:
-    A: "By paying a monthly subscription fee via the official Mila website"
-    B: "By successfully passing a rigorous technical interview with a core professor"
-    C: "By directly contacting Mila systems administrators and successfully completing the required IT Onboarding Training quiz, provided you meet the strict affiliation requirements"
-    D: "By creating an account entirely freely through GitHub SSO"
-    E: "Accounts are automatically and dynamically generated for all university students residing in Canada"
+    A: "Install any TOTP-compatible authenticator app on your phone, open it, and scan the QR code shown on the Mila cluster dashboard — no web portal visit required"
+    B: "Go to mfa.mila.quebec and log in with your @mila.quebec email address and your regular Mila account password, then enroll a TOTP device"
+    C: "Go to mfa.mila.quebec, log in with your cluster username and the registration token from the email as the password, then immediately add at least one TOTP token using a compatible authenticator app (e.g., Authy, Google Authenticator)"
+    D: "Email IT support at it-support@mila.quebec requesting them to enable MFA on your account; they will send a QR code to scan"
+    E: "Run `mila init` locally — it configures both SSH and MFA automatically in a single interactive setup step"
   answer: C
+  skills:
+    - mila-account-setup
 
-- question: "How many different SSH keys can I use to connect to the Mila cluster?"
+- question: "I have not received my MFA email. What should I do?"
   options:
-    A: "1"
-    B: "2"
-    C: "5"
-    D: "Unlimited"
-    E: "0, SSH connectivity is not supported on the infrastructure"
-  answer: B
+    A: "Check your spam folder, then try logging into mfa.mila.quebec with your regular @mila.quebec account password to trigger a new token to be sent"
+    B: "Ask your supervisor to resubmit the onboarding application — the registration email is only sent when the application is reprocessed"
+    C: "Run `mila init` on your local machine; it will detect the missing MFA setup and trigger IT to send the registration email"
+    D: "Verify that your cluster access has been confirmed by IT (email or Slack), check your spam folder, and if the email is still missing, contact IT support at it-support.mila.quebec to request a new registration token"
+    E: "Wait at least two weeks before reaching out, since registration emails are batched and sent on a fixed weekly schedule"
+  answer: D
+  skills:
+    - mila-account-setup
 
-- question: "Can I add a new SSH key myself to connect to the Mila cluster?"
+- question: >-
+    "I can't seem to login to the 2FA thing, I use my username and the supplied
+    password in the email but it won't let me logon. What could be the reason
+    for this?"
   options:
-    A: "Yes, by securely SSHing in and directly editing your personal `~/.ssh/authorized_keys` file on the cluster filesystem"
-    B: "Yes, by generating a key via `ssh-keygen` and ignoring the written policies"
-    C: "No, you must formally ask IT-support via a ticket to add or rotate it for you"
-    D: "Yes, but strictly only if you route the connection through a secondary proxy server"
-    E: "A and B"
-  answer: C
+    A: "The mfa.mila.quebec portal is temporarily offline for scheduled maintenance; it typically becomes available again within a few hours"
+    B: "Your cluster account must be accessed via SSH at least once before the MFA portal will accept your credentials for the first time"
+    C: "Cluster access can take up to 48 hours to propagate; the MFA portal will not accept logins until the account is fully active on all systems"
+    D: "The registration token is tied to the specific browser and device from which you originally opened the email; you must use the same browser to log in to the portal"
+    E: "The registration token from the email is single-use and is consumed on the very first login to mfa.mila.quebec. If you logged in previously without adding a TOTP token and then left, the token is now expired — contact IT support at it-support.mila.quebec to receive a new one"
+  answer: E
+  skills:
+    - mila-account-setup
+#
+# - question: "How many different SSH keys can I use to connect to the Mila cluster?"
+#   options:
+#     A: "1"
+#     B: "2"
+#     C: "5"
+#     D: "Unlimited"
+#     E: "0, SSH connectivity is not supported on the infrastructure"
+#   answer: B
+#   skills:
+#     - mila-account-setup
+#
+# - question: "Can I add a new SSH key myself to connect to the Mila cluster?"
+#   options:
+#     A: "Yes, by securely SSHing in and directly editing your personal `~/.ssh/authorized_keys` file on the cluster filesystem"
+#     B: "Yes, by generating a key via `ssh-keygen` and ignoring the written policies"
+#     C: "No, you must formally ask IT-support via a ticket to add or rotate it for you"
+#     D: "Yes, but strictly only if you route the connection through a secondary proxy server"
+#     E: "A and B"
+#   answer: C
+#   skills:
+#     - mila-account-setup
 
 - question: "Who should I reach out to if I have trouble connecting to the cluster with SSH?"
   options:
@@ -51,6 +97,8 @@
     D: "Your specific supervising professor"
     E: "Anthropic API support"
   answer: B
+  skills:
+    - mila-account-setup
 
 - question: "How do I contact the IT team?"
   options:
@@ -60,12 +108,16 @@
     D: "By running the `mila init` command with the `--help` flag"
     E: "By contacting DRAC external support"
   answer: A
-
-- question: "What is the difference between the IT and IDT teams at Mila?"
-  options:
-    A: "IT handles algorithmic design and model architecture; IDT handles the physical network cables"
-    B: "There is no functional difference; they are exactly the same team under different names"
-    C: "IT manages physical infrastructure, accounts, VPNs, and SSH access; IDT assists with ML workflows, PyTorch optimization, distributed training, and technical documentation"
-    D: "IT only works on the remote DRAC clusters; IDT strictly only works on the internal Mila cluster"
-    E: "IT manages the physical desk reservations; IDT manages the cafeteria operations"
-  answer: C
+  skills:
+    - mila-account-setup
+#
+# - question: "What is the difference between the IT and IDT teams at Mila?"
+#   options:
+#     A: "IT handles algorithmic design and model architecture; IDT handles the physical network cables"
+#     B: "There is no functional difference; they are exactly the same team under different names"
+#     C: "IT manages physical infrastructure, accounts, VPNs, and SSH access; IDT assists with ML workflows, PyTorch optimization, distributed training, and technical documentation"
+#     D: "IT only works on the remote DRAC clusters; IDT strictly only works on the internal Mila cluster"
+#     E: "IT manages the physical desk reservations; IDT manages the cafeteria operations"
+#   answer: C
+#   skills:
+#     - mila-account-setup
