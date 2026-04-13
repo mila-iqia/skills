@@ -20,7 +20,12 @@ from pathlib import Path
 
 def fmt_score(result: dict) -> str:
     pct = round(result["score"] * 100)
-    return f"{pct}% ({result['correct_answers']}/{result['num_questions']})"
+    n_cand = result.get("num_candidates", 1)
+    total = result["num_questions"] * n_cand
+    if n_cand > 1:
+        std_pp = round(result.get("score_std", 0) * 100)
+        return f"{pct}% ±{std_pp}pp ({result['correct_answers']}/{total})"
+    return f"{pct}% ({result['correct_answers']}/{total})"
 
 
 def fmt_delta(a: dict, b: dict) -> str:
@@ -28,11 +33,38 @@ def fmt_delta(a: dict, b: dict) -> str:
     return f"+{delta}pp" if delta >= 0 else f"{delta}pp"
 
 
-def answer_icon(answers: list, i: int) -> str:
+def answer_cell(answers: list, i: int, n_candidates: int) -> str:
+    """Render one per-question cell. Handles both single- and multi-candidate shapes."""
     if i >= len(answers):
         return "❓"
-    v = answers[i]
-    return "✅" if v is True else "❌" if v is False else "❓"
+    a = answers[i]
+    if "pass_rate" in a:
+        # multi-candidate: a["selected"] is a list; count non-null-and-correct runs
+        passed = sum(1 for s in a["selected"] if s is not None and s == a["expected"])
+        return f"{passed}/{n_candidates}"
+    # single-candidate
+    correct = a.get("correct")
+    return "✅" if correct is True else "❌" if correct is False else "❓"
+
+
+def answer_pass_rate(answers: list, i: int) -> float | None:
+    """Per-question pass fraction in [0, 1], or None if missing."""
+    if i >= len(answers):
+        return None
+    a = answers[i]
+    if "pass_rate" in a:
+        return a["pass_rate"]
+    if a.get("correct") is True:
+        return 1.0
+    if a.get("correct") is False:
+        return 0.0
+    return None
+
+
+def delta_arrow(before: float | None, after: float | None) -> str:
+    if before is None or after is None or before == after:
+        return ""
+    return "↑" if after > before else "↓"
 
 
 def main() -> int:
@@ -114,20 +146,35 @@ def main() -> int:
     for s in skills:
         if not s["questions"]:
             continue
+        n_cand_base = s["baseline"].get("num_candidates", 1)
+        n_cand_cur = s["current"].get("num_candidates", 1)
+        multi = n_cand_base > 1 or n_cand_cur > 1
+
         lines.append("<details>")
         lines.append(
             f"<summary><code>{s['name']}</code> — per-question results</summary>"
         )
         lines.append("")
-        lines.append("| Question | Baseline | With skill |")
-        lines.append("|---|:---:|:---:|")
+        if multi:
+            lines.append("| Question | Baseline | With skill | Δ |")
+            lines.append("|---|:---:|:---:|:---:|")
+        else:
+            lines.append("| Question | Baseline | With skill |")
+            lines.append("|---|:---:|:---:|")
         for i, q in enumerate(s["questions"]):
             text = q["question"]
             if len(text) > 80:
                 text = text[:79] + "…"
-            b_icon = answer_icon(s["baseline_answers"], i)
-            c_icon = answer_icon(s["current_answers"], i)
-            lines.append(f"| {text} | {b_icon} | {c_icon} |")
+            b_cell = answer_cell(s["baseline_answers"], i, n_cand_base)
+            c_cell = answer_cell(s["current_answers"], i, n_cand_cur)
+            if multi:
+                arrow = delta_arrow(
+                    answer_pass_rate(s["baseline_answers"], i),
+                    answer_pass_rate(s["current_answers"], i),
+                )
+                lines.append(f"| {text} | {b_cell} | {c_cell} | {arrow} |")
+            else:
+                lines.append(f"| {text} | {b_cell} | {c_cell} |")
         lines.append("")
         lines.append("</details>")
         lines.append("")
