@@ -9,6 +9,11 @@
       "name": "example-tools",
       "source": "./example-tools",
       "description": "Example plugin demonstrating the marketplace structure"
+    },
+    {
+      "name": "mila-tools",
+      "source": "./mila-tools",
+      "description": "Skills for Mila cluster users: account setup, local setup, SSH connection, and running jobs"
     }
   ]
 }

@@ -1,0 +1,92 @@
+- question: "How do I connect to the cluster?"
+  options:
+    A: "By using SSH via a local terminal or by utilizing the `milatools` Python package (e.g., `mila init`, `mila-cpu`, or `mila code`)"
+    B: "Through a specialized web browser portal exclusively"
+    C: "By physically plugging a USB drive directly into the server rack"
+    D: "Using a standard FTP client only"
+    E: "By connecting directly through the dashboard.server.mila.quebec diagnostic URL"
+  answer: A
+  skills:
+    - mila-connect-cluster
+    - mila-local-setup
+
+- question: "How do I connect to the cluster?"
+  options:
+    A: "By navigating a web browser to a hidden IP address"
+    B: "By utilizing `ssh mila` from your local terminal (if manually configured) or by leveraging the automated tools provided by installing the `milatools` framework locally"
+    C: "By calling the IT desk and asking them to open a remote desktop connection"
+    D: "By running `sbatch connect.sh`"
+    E: "A and B"
+  answer: B
+  skills:
+    - mila-connect-cluster
+    - mila-local-setup
+
+- question: "How do I install uv on the cluster?"
+  options:
+    A: "By running the curl command from the uv docs on a login node"
+    B: "By submitting an IT ticket demanding they install it globally for all users"
+    C: "It is already installed globally by default on all nodes, meaning you do not need to install it"
+    D: "By using the `module load uv` command on the login node"
+    E: "The `uv` package manager is strictly banned on the cluster infrastructure"
+  answer: A
+  skills:
+    - mila-connect-cluster
+
+- question: "If I have some SSH issues when connecting to compute nodes, which Slack channel should I ask for help in?"
+  options:
+    A: "#tamia-cluster"
+    B: "#pytorch"
+    C: "#compute-canada"
+    D: "#mila-cluster"
+    E: "#random"
+  answer: D
+  skills:
+    - mila-connect-cluster
+
+- question: "Is it okay to direct-message an IT or IDT team member on Slack if I have a problem?"
+  options:
+    A: "Yes, bypassing channels is the fastest and highly recommended way to get immediate help"
+    B: "No, you must utilize the public channels (like #mila-cluster), physically attend office hours, or officially open an IT support ticket"
+    C: "Yes, but strictly only after midnight to avoid daytime congestion"
+    D: "Yes, but exclusively for advanced PyTorch bugs"
+    E: "No, the entire Slack platform is strictly forbidden for any technical communication"
+  answer: B
+  skills:
+    - mila-connect-cluster
+
+- question: "Who should I reach out to if I have trouble connecting to the cluster with `mila code`?"
+  options:
+    A: "The IDT Team via Slack or office hours"
+    B: "The IT Team, because it involves SSH tunneling and jump host infrastructure"
+    C: "IT first, since they manage SSH connection issues. IDT only as a last resort (or via Slack)."
+    D: "Compute Canada"
+    E: "No one, the specific command has been deprecated and is no longer supported"
+  answer: C
+  skills:
+    - mila-connect-cluster
+    - mila-run-jobs
+
+- question: "Can I run Visual Studio Code on the Mila cluster login nodes?"
+  options:
+    A: "Yes, it is perfectly safe and won't noticeably consume shared resources"
+    B: "No, VSCode IDE backend servers are exceptionally heavy processes. You must use `mila code` or the specific `mila-cpu` SSH entry to run VSCode securely on an isolated compute node"
+    C: "Yes, but strictly only if you manually disable all installed extensions first"
+    D: "No, Visual Studio Code is strictly banned across the entire Mila organizational infrastructure"
+    E: "Yes, but only if you launch the GUI via the external DRAC portal"
+  answer: B
+  skills:
+    - mila-connect-cluster
+    - mila-run-jobs
+
+- question: "What is a Login node?"
+  options:
+    A: "A heavily provisioned node dedicated entirely to running 5-day ML training jobs"
+    B: "The primary entry point to the cluster infrastructure, used exclusively for lightweight administrative tasks like navigating directories, compiling basic code, and submitting batch jobs to the Slurm queue"
+    C: "A specific compute node that natively has 8x H100 GPUs attached to it"
+    D: "A node that is permanently and physically disconnected from the internet"
+    E: "A massive storage array that exclusively holds the `$SCRATCH` partition"
+  answer: B
+  skills:
+    - mila-connect-cluster
+    - mila-run-jobs

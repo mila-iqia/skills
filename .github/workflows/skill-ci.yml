@@ -73,8 +73,9 @@ jobs:
             python -m docmetrics \
               --questions "$dir/quiz.yaml" \
               --docs-file "$dir/SKILL.md" \
-              --model ollama:gpt-oss:120b \
+              --model ollama:gemma4:e2b \
               --ollama-url=dgx:11434 \
+              --num-candidates 3 \
               --output-format json > "/tmp/skill-results/$SLUG/current.json"
 
             # Base branch: with old SKILL.md (only for modified skills on PRs)
@@ -85,8 +86,9 @@ jobs:
                 python -m docmetrics \
                   --questions "$dir/quiz.yaml" \
                   --docs-file /tmp/base-skill.md \
-                  --model ollama:gpt-oss:120b \
+                  --model ollama:gemma4:e2b \
                   --ollama-url=dgx:11434 \
+                  --num-candidates 3 \
                   --output-format json > "/tmp/skill-results/$SLUG/base.json"
               fi
             fi
