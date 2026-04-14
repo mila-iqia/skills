@@ -9,7 +9,7 @@
   skills:
     - mila-base
 
-- question: "Under what conditions should the assistant offer to run a terminal command for the user?"
+- question: "Under what conditions should an AI assistant offer to run a terminal command for the user?"
   options:
     A: "For any command shown in a code block in the response, including commands intended to run on the cluster"
     B: "Only for read-only commands that do not modify the filesystem or install any software"
