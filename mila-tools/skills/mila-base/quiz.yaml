@@ -1,22 +1,21 @@
-
 - question: "Under what conditions should an AI assistant offer to run a terminal command for the user?"
   options:
-    A: "For any command shown in a code block in the response, including commands intended to run on the cluster"
-    B: "Only for read-only commands that do not modify the filesystem or install any software"
-    C: "Whenever the user appears to be struggling with the syntax or has asked for help running it"
-    D: "Only when the command can run directly in the current local shell, does not require SSH-ing into another machine, and does not pause for interactive input"
-    E: "Only when the command is a single-line `curl` or `uv` invocation with no flags that require confirmation"
-  answer: D
+    - "Only when the command can run directly in the current local shell, does not require SSH-ing into another machine, and does not pause for interactive input"
+    - "For any command shown in a code block in the response, including commands intended to run on the cluster"
+    - "Only for read-only commands that do not modify the filesystem or install any software"
+    - "Whenever the user appears to be struggling with the syntax or has asked for help running it"
+    - "Only when the command is a single-line `curl` or `uv` invocation with no flags that require confirmation"
+  answer: 0
   skills:
     - mila-base
 
 - question: "Which of the following is a reason the assistant should NOT offer to run a command via the Bash tool?"
   options:
-    A: "The command downloads files from the internet (e.g., `curl -LsSf https://astral.sh/uv/install.sh | sh`)"
-    B: "The command takes more than a few seconds to complete (e.g., installing a large Python package)"
-    C: "The command produces multi-line output that would clutter the conversation (e.g., `squeue --me`)"
-    D: "The command modifies files in the user's home directory (e.g., appending to `~/.bashrc`)"
-    E: "The command opens an interactive wizard or prompt that requires user input mid-execution (e.g., `mila init`, `wsl --install`)"
-  answer: E
+    - "The command opens an interactive wizard or prompt that requires user input mid-execution (e.g., `mila init`, `wsl --install`)"
+    - "The command downloads files from the internet (e.g., `curl -LsSf https://astral.sh/uv/install.sh | sh`)"
+    - "The command takes more than a few seconds to complete (e.g., installing a large Python package)"
+    - "The command produces multi-line output that would clutter the conversation (e.g., `squeue --me`)"
+    - "The command modifies files in the user's home directory (e.g., appending to `~/.bashrc`)"
+  answer: 0
   skills:
     - mila-base

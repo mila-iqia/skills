@@ -1,65 +1,65 @@
 - question: "How do I install WSL?"
   options:
-    A: "By downloading the WSL binary directly from the Mila dashboard and transferring it via SCP"
-    B: "By opening the Windows PowerShell as an administrator and executing the `wsl --install` command, fulfilling the POSIX prerequisite for local Windows-based development before connecting"
-    C: "You cannot install WSL; Windows machines are strictly banned from connecting to the cluster"
-    D: "By submitting an IT support ticket requesting them to remotely install it on your laptop"
-    E: "By using the `module load wsl` command on the cluster login node"
-  answer: B
+    - "By opening the Windows PowerShell as an administrator and executing the `wsl --install` command, fulfilling the POSIX prerequisite for local Windows-based development before connecting"
+    - "By downloading the WSL binary directly from the Mila dashboard and transferring it via SCP"
+    - "You cannot install WSL; Windows machines are strictly banned from connecting to the cluster"
+    - "By submitting an IT support ticket requesting them to remotely install it on your laptop"
+    - "By using the `module load wsl` command on the cluster login node"
+  answer: 0
   skills:
     - mila-local-setup
 
 - question: "How do I install uv on my local machine?"
   options:
-    A: "You must manually compile it from source utilizing a C++ toolchain"
-    B: "By strictly following the standard installation instructions corresponding to your local OS architecture as indicated in the 'Get Started' section of the Mila docs before establishing a cluster connection"
-    C: "You fundamentally cannot install it locally; it only functions dynamically on Slurm"
-    D: "By explicitly asking the IDT team to remotely install it for you"
-    E: "Exclusively through the DRAC web portal"
-  answer: B
+    - "By strictly following the standard installation instructions corresponding to your local OS architecture as indicated in the 'Get Started' section of the Mila docs before establishing a cluster connection"
+    - "You must manually compile it from source utilizing a C++ toolchain"
+    - "You fundamentally cannot install it locally; it only functions dynamically on Slurm"
+    - "By explicitly asking the IDT team to remotely install it for you"
+    - "Exclusively through the DRAC web portal"
+  answer: 0
   skills:
     - mila-local-setup
 
 - question: "What is the preferred way to install milatools?"
   options:
-    A: "By running the `uv tool install milatools` command on a local terminal"
-    B: "By running the command `pip install -U milatools` within your local terminal"
-    C: "By downloading the pre-compiled binary directly from the Windows App Store"
-    D: "By officially opening an IT support ticket and requesting the execution binary via email"
-    E: "Milatools is a proprietary software that cannot be installed by users; it is only available on the cluster login nodes by default"
-  answer: A
+    - "By running the `uv tool install milatools` command on a local terminal"
+    - "By running the command `pip install -U milatools` within your local terminal"
+    - "By downloading the pre-compiled binary directly from the Windows App Store"
+    - "By officially opening an IT support ticket and requesting the execution binary via email"
+    - "Milatools is a proprietary software that cannot be installed by users; it is only available on the cluster login nodes by default"
+  answer: 0
   skills:
     - mila-local-setup
 
 - question: "How do I configure milatools?"
   options:
-    A: "By manually writing over 100 lines of complex XML configuration files"
-    B: "By running the `mila init` command locally and carefully following the interactive terminal prompts to effortlessly setup all required SSH configurations and proxy jumps"
-    C: "By directly editing the underlying Slurm C codebase"
-    D: "By setting up an active AIP allocation"
-    E: "C and D"
-  answer: B
+    - "By running the `mila init` command locally and carefully following the interactive terminal prompts to effortlessly setup all required SSH configurations and proxy jumps"
+    - "By manually writing over 100 lines of complex XML configuration files"
+    - "By directly editing the underlying Slurm C codebase"
+    - "By setting up an active AIP allocation"
+    - "C and D"
+  answer: 0
   skills:
     - mila-local-setup
 
 - question: "Should I run Mila init every day? Or just once?"
   options:
-    A: "Every single time you open a new local terminal session"
-    B: "Every day immediately before your first coffee"
-    C: "Just once to initially set up the SSH access configurations on your local machine. There is absolutely no need to run it regularly."
-    D: "Only specifically when the core cluster crashes"
-    E: "Every single time before you submit a batch job via `sbatch`"
-  answer: C
+    - "Just once to initially set up the SSH access configurations on your local machine. There is absolutely no need to run it regularly."
+    - "Every single time you open a new local terminal session"
+    - "Every day immediately before your first coffee"
+    - "Only specifically when the core cluster crashes"
+    - "Every single time before you submit a batch job via `sbatch`"
+  answer: 0
   skills:
     - mila-local-setup
 
 - question: "Should I use Conda, pip/virtualenv, or uv?"
   options:
-    A: "Conda and pip are strictly banned by policy; only `uv` is permitted to execute"
-    B: "While all three are valid Python environment managers, Mila's official documentation and minimal examples highly recommend `uv` due to its vastly superior dependency resolution speeds"
-    C: "You must run all three simultaneously within the exact same script for redundancy"
-    D: "None of them; the Python programming language is unsupported on the cluster"
-    E: "Use pip exclusively, as `uv` is fundamentally incompatible with the Slurm scheduler"
-  answer: B
+    - "While all three are valid Python environment managers, Mila's official documentation and minimal examples highly recommend `uv` due to its vastly superior dependency resolution speeds"
+    - "Conda and pip are strictly banned by policy; only `uv` is permitted to execute"
+    - "You must run all three simultaneously within the exact same script for redundancy"
+    - "None of them; the Python programming language is unsupported on the cluster"
+    - "Use pip exclusively, as `uv` is fundamentally incompatible with the Slurm scheduler"
+  answer: 0
   skills:
     - mila-local-setup
