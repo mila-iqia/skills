@@ -1,13 +1,3 @@
-- question: "What does the `mila-base` skill do when invoked by another Mila skill?"
-  options:
-    A: "It prints a brief summary of Mila cluster usage policies at the start of every response that loads it"
-    B: "It fetches the latest cluster guidelines from docs.mila.quebec and appends them to the assistant's system context"
-    C: "It silently applies shared behavioral policies to the assistant's response, without adding any preamble or summary to the user"
-    D: "It verifies the user's cluster credentials before allowing the main skill to proceed with its workflow"
-    E: "It resets the conversation context so the assistant focuses exclusively on Mila-related topics for the rest of the session"
-  answer: C
-  skills:
-    - mila-base
 
 - question: "Under what conditions should an AI assistant offer to run a terminal command for the user?"
   options:
