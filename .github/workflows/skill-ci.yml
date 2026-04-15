@@ -4,12 +4,12 @@ on:
   push:
     branches: [master]
     paths:
-      - '**/skills/*/SKILL.md'
-      - '**/skills/*/quiz.yaml'
+      - "**/skills/*/SKILL.md"
+      - "**/skills/*/quiz.yaml"
   pull_request:
     paths:
-      - '**/skills/*/SKILL.md'
-      - '**/skills/*/quiz.yaml'
+      - "**/skills/*/SKILL.md"
+      - "**/skills/*/quiz.yaml"
 
 permissions:
   contents: read
@@ -56,7 +56,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: "3.14"
 
       - name: Install docmetrics
         run: pip install "git+https://github.com/mila-iqia/docmetrics.git@master"
@@ -72,7 +72,7 @@ jobs:
             # Current branch: baseline + with current SKILL.md
             python -m docmetrics \
               --questions "$dir/quiz.yaml" \
-              --docs-file "$dir/SKILL.md" \
+              --docs-url "docs.mila.quebec" \
               --model ollama:gemma4:e2b \
               --ollama-url=dgx:11434 \
               --num-candidates 3 \
