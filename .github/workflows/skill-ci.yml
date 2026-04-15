@@ -63,6 +63,8 @@ jobs:
 
       - name: Run docmetrics for each skill
         run: |
+          uvx hatch run claude:install
+
           while IFS= read -r dir; do
             [ -z "$dir" ] && continue
             SLUG=$(echo "$dir" | sed 's|^\./||; s|/|__|g')
@@ -73,7 +75,7 @@ jobs:
             python -m docmetrics \
               --questions "$dir/quiz.yaml" \
               --docs-url "docs.mila.quebec" \
-              --model ollama:gemma4:e2b \
+              --model ollama:gemma4:31b \
               --ollama-url=dgx:11434 \
               --num-candidates 3 \
               --output-format json > "/tmp/skill-results/$SLUG/current.json"
@@ -85,8 +87,8 @@ jobs:
                 echo "  Base branch SKILL.md found, evaluating..."
                 python -m docmetrics \
                   --questions "$dir/quiz.yaml" \
-                  --docs-file /tmp/base-skill.md \
-                  --model ollama:gemma4:e2b \
+                  --docs-url "docs.mila.quebec" \
+                  --model ollama:gemma4:31b \
                   --ollama-url=dgx:11434 \
                   --num-candidates 3 \
                   --output-format json > "/tmp/skill-results/$SLUG/base.json"
