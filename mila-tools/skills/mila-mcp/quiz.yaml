@@ -1,0 +1,54 @@
+- question: "What is the Mila Docs MCP server used for?"
+  options:
+    A: "Submitting batch jobs to the Slurm queue on behalf of the user"
+    B: "Allowing AI assistants like Claude Code or Cursor to search the Mila technical documentation directly from the editor"
+    C: "Providing remote desktop access to the Mila cluster login nodes"
+    D: "Automatically installing milatools and configuring SSH keys"
+    E: "Replacing the need for a Mila account by providing anonymous cluster access"
+  answer: B
+  skills:
+    - mila-mcp
+
+- question: "What command adds the Mila Docs MCP server to Claude Code?"
+  options:
+    A: "`mila init --mcp`"
+    B: "`claude mcp add --transport http mila-docs https://558773LESW.algolia.net/mcp/1/3_N8rKyLQhaxUEpt0FMx6A/mcp`"
+    C: "`curl -LsSf https://docs.mila.quebec/mcp | sh`"
+    D: "`pip install mila-mcp && mila-mcp start`"
+    E: "`ssh mila --mcp-forward`"
+  answer: B
+  skills:
+    - mila-mcp
+
+- question: "How do you configure the Mila Docs MCP server in Cursor?"
+  options:
+    A: "By running `cursor mcp add mila-docs` in the terminal"
+    B: "By submitting an IT support ticket and waiting for remote deployment"
+    C: "By adding a `mila-docs` entry with the endpoint URL to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project), then restarting Cursor"
+    D: "By installing the `mila-cursor-extension` from the Cursor marketplace"
+    E: "By editing the Slurm configuration file on the login node"
+  answer: C
+  skills:
+    - mila-mcp
+
+- question: "Does the Mila Docs MCP endpoint require a separate API key or login?"
+  options:
+    A: "Yes, you must generate a personal API key from your Mila account portal"
+    B: "Yes, you must use your cluster SSH credentials to authenticate"
+    C: "No, the API key is embedded in the endpoint URL and no additional authentication is needed"
+    D: "Yes, you must contact IT to be added to an allowlist before the endpoint responds"
+    E: "No, but you must be connected to the Mila VPN for the endpoint to be reachable"
+  answer: C
+  skills:
+    - mila-mcp
+
+- question: "How can you restrict the Mila Docs MCP server to a single project in Claude Code?"
+  options:
+    A: "Create a `.clauderc` file in the project root with the MCP URL"
+    B: "Pass `--scope project` to the `claude mcp add` command"
+    C: "Edit the global `~/.claude/config.json` and set `scope: project`"
+    D: "Run `mila init --scope project` from the project directory"
+    E: "It is not possible to scope MCP servers to individual projects in Claude Code"
+  answer: B
+  skills:
+    - mila-mcp

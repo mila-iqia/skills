@@ -10,6 +10,7 @@ This directory contains Claude Code configuration for the [Mila documentation](h
 | `mila-local-setup` | "How do I install WSL", "How do I install uv", "How do I install milatools", "What is milatools", "mila init", "SSH config", "authorized_keys" | Guides through setting up WSL 2 (Windows), uv, and milatools on a local machine |
 | `mila-connect-cluster` | "How do I connect to the cluster", "How do I SSH", "I can't connect", "permission denied", "host key verification failed", "OTP" | Guides through SSH connection, OTP entry, and connection troubleshooting |
 | `mila-run-jobs` | "How do I run a job", "mila code", "sbatch", "How do I use a GPU", "check available GPUs", "nvidia-smi", "train a model", "job queue" | Guides through interactive development with `mila code` and batch job submission with `sbatch` |
+| `mila-mcp` | "How do I set up the Mila MCP", "Mila MCP server", "mila-docs MCP", "How do I connect Claude to Mila docs", "How do I connect Cursor to Mila docs", "MCP configuration" | Guides through configuring the Mila Docs MCP server in Claude Code or Cursor |
 | `mila-base` | *(shared policy — not invoked directly)* | Provides the command execution policy and skill chain routing used by all mila-* skills |
 
 ## Usage
