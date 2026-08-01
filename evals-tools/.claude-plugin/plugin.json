@@ -1,0 +1,5 @@
+{
+  "name": "evals-tools",
+  "version": "1.0.0",
+  "description": "Skills for evaluating models and triaging large corpora with LLM judges on a budget"
+}

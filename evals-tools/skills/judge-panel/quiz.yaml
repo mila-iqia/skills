@@ -1,0 +1,50 @@
+# These questions test knowledge provided by the skill, not general facts about LLM evaluation.
+# Each answer requires having read the specific content of SKILL.md.
+
+- question: "According to the skill, what must happen before any model call once the corpus exceeds the Stage 0 threshold?"
+  options:
+    A: "The user must approve the token budget"
+    B: "A deterministic detector is proposed and its shrink ratio shown to the user"
+    C: "The corpus is split into context-window-sized chunks"
+    D: "A strong model summarizes the corpus first"
+  answer: B
+
+- question: "What does the skill say the Stage 1 detector should optimize for?"
+  options:
+    A: "Precision: false positives are the failure mode to design against"
+    B: "Balanced precision and recall"
+    C: "Recall: false positives are acceptable, missed true positives are the failure mode"
+    D: "Zero false positives, achieved by tightening thresholds"
+  answer: C
+
+- question: "What are the DEFAULT verdict names the skill gives for the closed three-way verdict set?"
+  options:
+    A: "pass / fail"
+    B: "accept / watch / reject"
+    C: "good / bad / unsure / skip"
+    D: "Any free-form label the judge finds descriptive"
+  answer: B
+
+- question: "Per the calibration step, when is the cheap judge moved one price tier up?"
+  options:
+    A: "When it disagrees with a strong model on more than 3 of 20 spot-checked candidates"
+    B: "When it disagrees on any of 20 spot-checked candidates"
+    C: "When the user reports a wrong label"
+    D: "When the shortlist exceeds 1,000 items"
+  answer: A
+
+- question: "In the optional panel stage, what happens when the 3 cheap-model votes produce no majority (including a three-way split)?"
+  options:
+    A: "The item is dropped from the shortlist"
+    B: "A human labels the item"
+    C: "The most conservative verdict wins"
+    D: "One strong-model tiebreak judges the item"
+  answer: D
+
+- question: "Which of these is NOT one of the three artifacts the output contract requires?"
+  options:
+    A: "A rerunnable detector script"
+    B: "A verdict table with one-line justifications"
+    C: "A fine-tuned classifier replacing the judge"
+    D: "A run summary including calibration agreement and tokens saved"
+  answer: C

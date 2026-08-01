@@ -1,6 +1,8 @@
 {
   "name": "mila-skills",
-  "owner": { "name": "Mila" },
+  "owner": {
+    "name": "Mila"
+  },
   "metadata": {
     "description": "Skill marketplace for Mila researchers"
   },
@@ -14,6 +16,11 @@
       "name": "mila-tools",
       "source": "./mila-tools",
       "description": "Skills for Mila cluster users: account setup, local setup, SSH connection, and running jobs"
+    },
+    {
+      "name": "evals-tools",
+      "source": "./evals-tools",
+      "description": "Evaluate models and triage large corpora with LLM judges on a budget"
     }
   ]
 }
