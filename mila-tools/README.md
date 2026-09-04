@@ -10,6 +10,7 @@ This directory contains Claude Code configuration for the [Mila documentation](h
 | `mila-local-setup` | "How do I install WSL", "How do I install uv", "How do I install milatools", "What is milatools", "mila init", "SSH config", "authorized_keys" | Guides through setting up WSL 2 (Windows), uv, and milatools on a local machine |
 | `mila-connect-cluster` | "How do I connect to the cluster", "How do I SSH", "I can't connect", "permission denied", "host key verification failed", "OTP" | Guides through SSH connection, OTP entry, and connection troubleshooting |
 | `mila-run-jobs` | "How do I run a job", "mila code", "sbatch", "How do I use a GPU", "check available GPUs", "nvidia-smi", "train a model", "job queue" | Guides through interactive development with `mila code` and batch job submission with `sbatch` |
+| `mila-sarc` | "How many jobs did I run", "GPU/RGU utilization", "compute usage", "How much GPU am I wasting", "Mila/DRAC usage stats" | Fetches job, user, cluster and usage data over HTTP from the SARC API (`sarc.mila.quebec`) |
 | `mila-base` | *(shared policy — not invoked directly)* | Provides the command execution policy and skill chain routing used by all mila-* skills |
 
 ## Usage

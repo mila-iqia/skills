@@ -1,0 +1,80 @@
+
+- question: "Where should a user go to obtain their SARC_TOKEN?"
+  options:
+    A: "Run `sarc login` on the Mila cluster"
+    B: "Open https://sarc.mila.quebec/token in a browser and copy the refresh_token value"
+    C: "Request it from Mila IT support via email"
+    D: "Generate it with `curl -X POST /v0/auth/token`"
+  answer: B
+
+- question: "How must every authenticated request to the SARC API present its token?"
+  options:
+    A: "As a `token` query parameter"
+    B: "In a cookie named `sarc_session`"
+    C: "In an `Authorization: Bearer $SARC_TOKEN` header"
+    D: "In a request body field called `api_key`"
+  answer: C
+
+- question: "If the user asks 'how many jobs did I run lately?' with no explicit date range given, what window should you use?"
+  options:
+    A: "All of history"
+    B: "Just today"
+    C: "The last two weeks, including today"
+    D: "Ask the user to clarify before doing anything"
+  answer: C
+
+- question: "On the `/v0` job endpoints, what happens if you pass a naive (non-timezone-aware) datetime to `start` or `end`?"
+  options:
+    A: "It is assumed to be UTC"
+    B: "It is assumed to be Mila's local timezone"
+    C: "The server returns a 422 error"
+    D: "The server silently ignores the filter"
+  answer: C
+
+- question: "On `/dash/metrics/*` endpoints, how is the `start`/`end` date range interpreted?"
+  options:
+    A: "Plain dates at 00:00 UTC, with `end` exclusive (half-open range)"
+    B: "Timezone-aware ISO-8601 datetimes, with `end` inclusive"
+    C: "Unix timestamps in seconds"
+    D: "Dates in the user's local timezone, with `end` inclusive"
+  answer: A
+
+- question: "A non-admin token gets a 501 error on `/v0/job/query`. What should you do?"
+  options:
+    A: "Retry the same request with different parameters"
+    B: "Set SARC_IS_ADMIN=1 yourself and retry"
+    C: "Switch to the equivalent `/dash/metrics/*` endpoint, or tell the user it's out of reach"
+    D: "Add `as_user=$SARC_USERNAME` to the request"
+  answer: C
+
+- question: "Which environment variable does SARC use to identify 'my jobs' in first-person questions, and what should it contain?"
+  options:
+    A: "SARC_USERNAME, the user's @mila.quebec email address"
+    B: "SARC_USER, the user's cluster login name"
+    C: "SARC_IS_ADMIN, a boolean flag"
+    D: "SARC_TOKEN, the bearer token itself"
+  answer: A
+
+- question: "What does a `cursor` value of `false` mean when paginating `/v0/job/query`?"
+  options:
+    A: "An error occurred and the request should be retried"
+    B: "There are no more results"
+    C: "The cursor was not provided and defaults to page 1"
+    D: "The results are still loading asynchronously"
+  answer: B
+
+- question: "Which of these endpoints should be avoided?"
+  options:
+    A: "/v0/job/query"
+    B: "/v0/job/count"
+    C: "/dash/metrics/job_counts"
+    D: "/v0/cluster/list"
+  answer: B
+
+- question: "Which of these statements is NOT a possible explanation for a GPU utilization of 0?"
+  options:
+    A: "The DCGM monitoring daemon on the compute node was turned off (by this user or another sharing the node), so nothing was recorded"
+    B: "The job genuinely never used the GPU it was allocated"
+    C: "The value is actually `null` (unmeasured), but a chart renders missing data as an empty/zero bar"
+    D: "SARC_IS_ADMIN was left at its default value of 0"
+  answer: D
