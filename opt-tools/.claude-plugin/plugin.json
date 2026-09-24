@@ -1,0 +1,5 @@
+{
+  "name": "opt-tools",
+  "version": "1.0.0",
+  "description": "Skills for optimization workflows: fast performance feedback loops for experiment code"
+}

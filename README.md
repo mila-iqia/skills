@@ -44,6 +44,8 @@ Installed skills appear immediately as slash commands (e.g. `/example-skill`).
 | Plugin | Description |
 |---|---|
 | `example-tools` | Example plugin demonstrating the structure |
+| `mila-tools` | Skills for Mila cluster users: account setup, local setup, SSH connection, and running jobs |
+| `opt-tools` | Skills for optimization workflows: fast performance feedback loops for experiment code |
 
 ## Contributing
 

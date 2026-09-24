@@ -14,6 +14,11 @@
       "name": "mila-tools",
       "source": "./mila-tools",
       "description": "Skills for Mila cluster users: account setup, local setup, SSH connection, and running jobs"
+    },
+    {
+      "name": "opt-tools",
+      "source": "./opt-tools",
+      "description": "Skills for optimization workflows: fast performance feedback loops for experiment code"
     }
   ]
 }

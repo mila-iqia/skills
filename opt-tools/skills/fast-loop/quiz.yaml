@@ -1,0 +1,40 @@
+
+- question: "When building a fast performance check, which part of the experiment code should the measurement focus on?"
+  options:
+    A: "The data loading pipeline"
+    B: "The part running for most of the experiment's time"
+    C: "The full end-to-end run including setup and teardown"
+    D: "The model initialization"
+  answer: B
+
+- question: "Before mocking the dataset, what should you check first?"
+  options:
+    A: "Whether the dataset is licensed for redistribution"
+    B: "Whether the dataset fits in GPU memory"
+    C: "Whether mocking the dataset could misrepresent the computation"
+    D: "Whether the dataset is available on HuggingFace"
+  answer: C
+
+- question: "Which command to use to stream GPU and CPU metrics as JSON lines every second?"
+  options:
+    A: "milalib monitor --json --every 1s"
+    B: "uvx milalib monitor -i 1 -m sm_occupancy -m gpu_util -m cpu_util -m ram_util"
+    C: "nvidia-smi --query-gpu=utilization.gpu --format=csv -l 1"
+    D: "mila monitor -i 1 --all"
+  answer: B
+
+- question: "Where does the skill recommend printing metrics, and why?"
+  options:
+    A: "File descriptor 2, so they are captured with stderr"
+    B: "stdout, so they can be piped to jq"
+    C: "File descriptor 4, so redirections can isolate them from the script's stdout/stderr"
+    D: "A file named /tmp/metrics.log"
+  answer: C
+
+- question: "Where should the resulting hot-spot script be documented?"
+  options:
+    A: "In the project's README.md"
+    B: "In OPTLOOP.md"
+    C: "In a Slurm job header comment"
+    D: "In the git commit message"
+  answer: B
