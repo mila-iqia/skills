@@ -28,11 +28,19 @@ Lastly, write a function to generate fake data that has the expected format. If 
 
 It should be relatively obvious where the bulk of the experiment is: a training loop, possibly a validation loop, or repeated inference on an LLM, and so on. Identify each such part and think about how to run them minimally so we can evaluate their performance and extrapolate on a full run, as fast as possible.
 
+## Determine the KPI
+
+Running the loop should give us a performance indicator.
+
+The exact performance indicator we are interested in varies depending on the type of research, but our ultimate objective is to minimize the walltime of our experiments and the indicator should reflect that (only regarding the part of the experiment that's represented in the hot spot.)
+
+For example, when training or running inference, we can look at the number of samples processed per second (normalized by the batch size). Other measurements may be relevant, e.g. time to reward.
+
 ## Create or configure a script
 
-We want a command that gives us a performance metric *as soon as possible*. This means minimizing set up time and only running the hot spot for a few seconds or a few minutes, depending. Try to see if command line arguments to that purpose can be easily added to the main script, or write a separate script.
+We want a command that gives us a KPI *as soon as possible*. This means minimizing set up time and only running the hot spot for a few seconds or a few minutes, depending. Try to see if command line arguments to that purpose can be easily added to the main script, or write a separate script.
 
-The performance metrics we are interested in are:
+In addition to the KPI, we would like to monitor hardware utilization metrics:
 
 * GPU metrics, if relevant:
   * gpu_util
@@ -66,7 +74,7 @@ async def main():
 asyncio.run(main())
 ```
 
-Here's a tip: print the metrics to file descriptor 4. That way, you can easily use redirections to get them, and ignore whatever the script prints to stdout or stderr.
+Here's a tip: print the KPI and metrics to file descriptor 4. That way, you can easily use redirections to get them, and ignore whatever the script prints to stdout or stderr.
 
 ## Document the script
 
