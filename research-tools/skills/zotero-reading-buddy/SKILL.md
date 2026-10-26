@@ -51,7 +51,9 @@ see what was selected, usually a figure or an equation.
    highlight is a fragment; the sentence before it, the definition two
    paragraphs up, or the figure it refers to is usually what makes it make sense.
 3. Go through the annotations in reading order, as below.
-4. Offer live mode (next section) if the user is still reading.
+4. If the user is still reading, ask which mode they want (next section): batch
+   (they annotate a stretch, then ask for answers) or live (you react to each
+   highlight as it is made). Batch is the default if they don't say.
 
 ## Helping with an annotation
 
@@ -71,10 +73,19 @@ see what was selected, usually a figure or an equation.
   so; the confusion is not always the reader's fault.
 - Related highlights (same page, same concept) can be answered together.
 
-## Live mode: reacting to highlights as they are made
+## Batch or live mode
 
-Run `watch` in the background (in Claude Code, with the Monitor tool, so that
-each output line arrives as a notification), restricted to the paper being read:
+**Batch mode** (the default): the user keeps reading and annotating
+undisturbed, then says they're ready. Note the UTC time of the last annotation
+you discussed, and when they come back fetch only the new ones with
+`show <key> --since '<that time>'`, then answer them in reading order. Nothing
+runs in the background.
+
+**Live mode**: you react to each highlight as it is made. Some readers like
+this, but it can feel like being interrupted mid-thought; if the user says so,
+stop the watcher and switch to batch. Run `watch` in the background (in Claude
+Code, with the Monitor tool, so that each output line arrives as a
+notification), restricted to the paper being read:
 
 ```bash
 uv run --script <scripts>/zotero_reader.py watch <paper key>
@@ -82,13 +93,11 @@ uv run --script <scripts>/zotero_reader.py watch <paper key>
 
 It prints one self-contained line per annotation added or edited, with the
 text, the comment, the pdf page and the PDF path. Zotero saves a highlight as
-soon as it is made and the comment when the user finishes typing it, so a
-highlight with a question typically arrives as `NEW` and then `UPDATED`: when a
-`NEW` highlight has no comment, wait briefly for its `UPDATED` line before
-answering. Stop the watcher when the session ends.
-
-Without live mode, pick up where you left off with `show <key> --since '<time of
-the last annotation you discussed>'`.
+soon as it is made, and saves its comment while it is being typed, so one
+highlight can arrive as `NEW` followed by several `UPDATED` lines with a
+partial comment ("Maybe only in the case where"). Answer only once the comment
+reads as a complete question. A lone `NEW` highlight with no comment may get
+one shortly, so give it a moment too. Stop the watcher when the session ends.
 
 ## How it reads the database safely
 
