@@ -1,0 +1,42 @@
+# These questions test knowledge provided by the skill: where Zotero keeps annotations,
+# how to read them safely, and how the reading-buddy workflow treats them.
+
+- question: "Where does Zotero store the highlights and comments a user makes on a PDF?"
+  options:
+    A: "Inside the PDF file, as standard PDF annotations"
+    B: "In the zotero.sqlite database in the Zotero data directory"
+    C: "In a JSON sidecar file next to the PDF in the storage folder"
+    D: "Only on the Zotero sync server"
+  answer: B
+
+- question: "Why does the reading-buddy script copy both zotero.sqlite and zotero.sqlite-wal before querying?"
+  options:
+    A: "Because the newest annotations sit in the write-ahead log until Zotero checkpoints it, and Zotero locks the database while running"
+    B: "Because the -wal file holds the PDF attachments"
+    C: "Because SQLite cannot read a database without its -wal file"
+    D: "To create a backup in case the query corrupts the library"
+  answer: A
+
+- question: "An image (area selection) annotation has no text. Where can its rendered picture be found?"
+  options:
+    A: "<data dir>/storage/<attachment key>/<annotation key>.png"
+    B: "Embedded as base64 in the itemAnnotations table"
+    C: "<data dir>/cache/library/<annotation key>.png"
+    D: "In the PDF's page thumbnail"
+  answer: C
+
+- question: "In live mode, the watcher prints a NEW highlight that has no comment. What should you do?"
+  options:
+    A: "Explain the highlighted passage immediately and in full"
+    B: "Ignore it, since only comments are questions"
+    C: "Wait briefly for its UPDATED line, since Zotero saves the comment after the highlight"
+    D: "Restart the watcher to reload the database"
+  answer: C
+
+- question: "The user highlighted a passage without writing a comment. How should the reading buddy treat it?"
+  options:
+    A: "As a passage the user agrees with, to be summarised at the end"
+    B: "As 'I don't get this': explain it briefly, then ask whether that was the sticking point"
+    C: "As a quote to be copied into a reading note"
+    D: "As noise, to be skipped unless the user asks about it"
+  answer: B
