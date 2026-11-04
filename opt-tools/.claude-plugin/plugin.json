@@ -1,0 +1,5 @@
+{
+  "name": "opt-tools",
+  "version": "1.0.0",
+  "description": "Skills for optimizing experiment code and compute resource usage on Slurm clusters"
+}

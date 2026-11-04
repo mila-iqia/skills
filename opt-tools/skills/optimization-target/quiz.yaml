@@ -1,0 +1,34 @@
+# These questions test knowledge provided by the skill, not general facts about Claude Code.
+# Each answer requires having read the specific content of SKILL.md.
+
+- question: "Which metric does the skill recommend as a good proxy to optimize instead of full walltime, which is slow to iterate on?"
+  options:
+    A: "Total number of jobs submitted to the cluster"
+    B: "Training samples or tokens processed per second"
+    C: "Number of GPUs requested per job"
+    D: "Size of the saved model checkpoint on disk"
+  answer: B
+
+- question: "What proxy does Mila's IDT team use to identify resource wastage, and which tool does the skill suggest for measuring it?"
+  options:
+    A: "GPU temperature — measured with nvidia-smi"
+    B: "SM occupancy (SMO) — measured with milalib"
+    C: "Memory bandwidth — measured with perf"
+    D: "Job queue time — measured with squeue"
+  answer: B
+
+- question: "Before changing a hyperparameter such as batch size to improve resource utilization, what does the skill instruct you to do?"
+  options:
+    A: "Change it silently as long as throughput improves"
+    B: "Always double the batch size regardless of the model"
+    C: "Raise it with the user early and ask what hyperparameter ranges are acceptable, since it changes results"
+    D: "Only change hyperparameters on CPU-only jobs"
+  answer: C
+
+- question: "According to the skill's invariants, what must remain unchanged after optimizing an experiment?"
+  options:
+    A: "The walltime of the job"
+    B: "The number of GPUs requested"
+    C: "The hyperparameter values"
+    D: "The experimental results"
+  answer: D
