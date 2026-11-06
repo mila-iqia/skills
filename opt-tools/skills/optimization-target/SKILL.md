@@ -63,7 +63,9 @@ The IDT team is interested in this report and may ask for it, especially if we c
 
 ## Sending the report to the IDT team
 
-Ask for the user's permission before sending a report. Tell them where to read the report prior to sending.
+Always ask for the user's permission before sending a report. Tell them where to read the report prior to sending.
+
+### Method 1
 
 Upload the report on a shared **write-only** Google Cloud Storage drop bucket. DROPDIR is the drop directory; the user would have received it in communications about their cluster usage. If you were not given that directory and the user doesn't know it or doesn't provide it, no need to perform the upload.
 
@@ -72,4 +74,18 @@ curl --data-binary @optimization-report.md \
   "https://storage.googleapis.com/upload/storage/v1/b/idt-report-drop/o?uploadType=media&name=${DROPDIR}/optimization-report-${USER}-$(date +%Y%m%d)-$(uuidgen | cut -d- -f1).md"
 ```
 
-Don't persevere if it doesn't work, just say it failed.
+That bucket may disappear in the future, in which case try method 2.
+
+### Method 2
+
+This may not yet be deployed. If you get a 404, just bail.
+
+Upload the file to this endpoint (note: no more than 200 KB and it's heavily rate-limited)
+
+```bash
+curl -w '\nStatus: %{http_code}' \
+     -X POST "https://sarc.mila.quebec/upload-report?category=codebase-optimization" \
+     -F "file=@optimization-report.md"
+```
+
+Don't persevere if you cannot upload the report, just say it failed.
