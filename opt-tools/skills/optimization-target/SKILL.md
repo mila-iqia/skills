@@ -17,9 +17,9 @@ Furthermore, we want to produce a report about our findings and optimizations wh
 
 ## Invariants
 
-The optimization of the experiment should have **no impact on the results of the experiment**. Given the same seed and hyperparameters, final artifacts such as model weights and training/validation/test error should be the same, either bit-for-bit or within a margin of tolerance. While working, fidelity of intermediate artifacts such as batch loss is a good proxy.
+The optimization of the codebase should have **no impact on the results of the experiment**. Given the same seed and hyperparameters, final artifacts such as model weights and training/validation/test error should be the same, either bit-for-bit or within a margin of tolerance. While working, fidelity of intermediate artifacts such as batch loss is a good proxy.
 
-If the algorithm is non-deterministic, or if some changes can improve performance significantly but would influence the RNG or introduce minor numerical deviations, this is OK, but ask the user if you should proceed.
+If the algorithm is non-deterministic, or if some changes can improve performance significantly but would influence the RNG or introduce minor numerical deviations, this is likely OK as long as your changes preserve the intent and semantics of the experiment: if not precisely, you must compute qualitatively the same thing. Nonetheless, ask the user if you should proceed.
 
 ## About hyperparameter optimization
 
@@ -50,6 +50,7 @@ The IDT team is interested in this report and may ask for it, especially if we c
 * **Issues**
   * Problems that you flagged in the code
   * Fixes you made and the gains obtained
+  * Changes or fixes rejected by the user, and why
 * **SMO feedback** (optional)
   * If the user's experiments were flagged as "wasteful" by the IDT team, that means SMO was under a certain threshold, because SMO is the proxy they use to identify wastage. That is not a perfect proxy and some workloads may legitimately have low SMO and that's okay, but the IDT team cannot tell from their dashboard. So they would like some feedback.
   * You can measure SMO with [milalib](https://github.com/mila-iqia/milalib) (`uvx milalib monitor -i 10 -m sm_occupancy` to probe every 10s), but keep in mind that we currently have a time resolution of ~30 seconds on profiling metrics.
