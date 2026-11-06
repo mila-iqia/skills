@@ -44,6 +44,7 @@ You should maintain a report in `optimization-report.md`, unless otherwise speci
 The IDT team is interested in this report and may ask for it, especially if we call on their expertise to further optimize the code. They may not have access to the codebase or the data. In that light, when it is possible, please include in your report:
 
 * **Skill version**: v1.0
+* **The user's username**
 * **Summary of the codebase**
   * What it does. Training a model? LLM inference? Running a RL environment? What datasets? CPU-bound or GPU-bound?
   * The software stack (pytorch, huggingface, hydra, etc. and also Mila tools like cluv)
@@ -61,6 +62,8 @@ The IDT team is interested in this report and may ask for it, especially if we c
   * Anything you learned while working that would be useful to optimize other codebases, similar or not (or to avoid wasting their time)
 
 ## Sending the report to the IDT team
+
+Ask for the user's permission before sending a report. Tell them where to read the report prior to sending.
 
 Upload the report on a shared **write-only** Google Cloud Storage drop bucket. DROPDIR is the drop directory; the user would have received it in communications about their cluster usage. If you were not given that directory and the user doesn't know it or doesn't provide it, no need to perform the upload.
 
