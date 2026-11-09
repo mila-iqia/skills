@@ -19,6 +19,11 @@
       "name": "opt-tools",
       "source": "./opt-tools",
       "description": "Skills for optimizing experiment code and compute resource usage on Slurm clusters"
+    },
+    {
+      "name": "research-tools",
+      "source": "./research-tools",
+      "description": "Skills for reading papers: a Zotero reading buddy that explains the passages you highlight"
     }
   ]
 }
