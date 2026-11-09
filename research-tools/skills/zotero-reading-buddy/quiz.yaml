@@ -40,3 +40,11 @@
     C: "As a quote to be copied into a reading note"
     D: "As noise, to be skipped unless the user asks about it"
   answer: B
+
+- question: "The user asks for your answers to be written into their Zotero comments. How should the reply be written?"
+  options:
+    A: "UPDATE the annotation's comment in a copy of zotero.sqlite, then copy it back"
+    B: "POST to Zotero's local HTTP API on port 23119"
+    C: "Append it to the comment through the Zotero Web API, after a '— 🤖 Claude:' marker, with a write conditional on the annotation's version"
+    D: "Create a new sticky-note annotation next to the highlight in the local database"
+  answer: C

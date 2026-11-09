@@ -5,10 +5,12 @@ description: >-
   passages they don't understand (often with a question in the comment) and you
   help them understand, interactively, grounded in the paper itself. Reads
   highlights, comments and area selections from the local Zotero database, and
-  can watch for new ones live while the user reads. Use when the user asks what
-  they highlighted or annotated, asks for help with a paper they are reading in
-  Zotero, says "reading buddy", "help me read", "explain my highlights", or wants
-  their reading notes reviewed. Read-only: never modifies the Zotero library.
+  can watch for new ones live while the user reads. Can also write answers back
+  into Zotero, appended to the user's comment, through the Zotero Web API. Use
+  when the user asks what they highlighted or annotated, asks for help with a
+  paper they are reading in Zotero, says "reading buddy", "help me read",
+  "explain my highlights", wants their reading notes reviewed, or wants answers
+  in their Zotero comments. Never writes the local Zotero database.
 ---
 
 # Zotero reading buddy
@@ -99,6 +101,46 @@ partial comment ("Maybe only in the case where"). Answer only once the comment
 reads as a complete question. A lone `NEW` highlight with no comment may get
 one shortly, so give it a moment too. Stop the watcher when the session ends.
 
+## Replying in Zotero
+
+The user can ask for answers to be written into Zotero as well, so they are
+next to the question while reading. `scripts/zotero_reply.py` appends a reply to
+the annotation's comment, after a blank line and a `— 🤖 Claude:` marker, so the
+question and its answer stay together in one comment:
+
+```bash
+uv run --script <scripts>/zotero_reply.py <annotation key> "<answer>"
+uv run --script <scripts>/zotero_reply.py <annotation key> - < answer.txt
+```
+
+The annotation key is the `annotation_key` of `show --json`. Add `--dry-run` to
+print the resulting comment without writing, `--group ID` for an annotation in
+a group library.
+
+- **Only when the user asks for it**, and with the same answer you give in the
+  chat, condensed: a comment is read in a small popup, so keep it to a short
+  paragraph of plain text (no Markdown, no LaTeX; Unicode symbols like μ, γ, ′
+  are fine). Answer comments with a question; leave annotations that need no
+  reply (a note to self, "interesting!") alone.
+- **Prefer appending to the comment over separate sticky-note annotations**: the
+  user preferred it, since a note sits apart from its question.
+- **Reply once the comment is finished.** The write is safe against an edit the
+  user synced in between (it is conditional on the annotation's version, and on
+  a conflict the script re-reads the comment and appends to its latest text),
+  but not against one still being typed in Zotero: that edit and the reply then
+  meet at the next sync.
+- It needs `ZOTERO_API_KEY`, a key with write access (create one at
+  https://www.zotero.org/settings/keys/new); the user ID is looked up from it.
+  If it is not set, ask the user to create one and tell you where it is
+  exported (e.g. a file to `source`). Never print the key, and never search
+  config files or the environment for keys or tokens yourself.
+- The annotation must already be synced to zotero.org: a fresh one can take a
+  few seconds, and a 404 can also mean sync is off or the annotation is in a
+  group library.
+
+The local copy shows the reply once Zotero syncs it back down; `show` then
+prints it as part of the comment.
+
 ## How it reads the database safely
 
 Annotations live in Zotero's SQLite database (`zotero.sqlite`), not in the PDFs.
@@ -107,7 +149,9 @@ write-ahead log until Zotero checkpoints it, so the script copies **both** files
 to a temporary directory and queries the copy. That works while Zotero is open
 and never writes to the library. Don't open `zotero.sqlite` directly, and never
 write to it: a direct read can miss the latest highlights, and a write can
-corrupt the library or be overwritten by sync.
+corrupt the library or be overwritten by sync. Replies go through the Web API
+(previous section) for that reason; Zotero's local HTTP API (port 23119) is
+read-only.
 
 The data directory is found from `$ZOTERO_DATA_DIR`, the
 `extensions.zotero.dataDir` pref of a Zotero profile, or `~/Zotero`; `check`
