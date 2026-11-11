@@ -44,6 +44,7 @@ You should maintain a report in `optimization-report.md`, unless otherwise speci
 The IDT team is interested in this report and may ask for it, especially if we call on their expertise to further optimize the code. They may not have access to the codebase or the data. In that light, when it is possible, please include in your report:
 
 * **Skill version**: v1.0
+* **Agent information**: Your model and harness, with versions, and effort level
 * **The user's username**
 * **Summary of the codebase**
   * What it does. Training a model? LLM inference? Running a RL environment? What datasets? CPU-bound or GPU-bound?
@@ -65,22 +66,7 @@ The IDT team is interested in this report and may ask for it, especially if we c
 
 Always ask for the user's permission before sending a report. Tell them where to read the report prior to sending.
 
-### Method 1
-
-Upload the report on a shared **write-only** Google Cloud Storage drop bucket. DROPDIR is the drop directory; the user would have received it in communications about their cluster usage. If you were not given that directory and the user doesn't know it or doesn't provide it, no need to perform the upload.
-
-```bash
-curl --data-binary @optimization-report.md \
-  "https://storage.googleapis.com/upload/storage/v1/b/idt-report-drop/o?uploadType=media&name=${DROPDIR}/optimization-report-${USER}-$(date +%Y%m%d)-$(uuidgen | cut -d- -f1).md"
-```
-
-That bucket may disappear in the future, in which case try method 2.
-
-### Method 2
-
-This may not yet be deployed. If you get a 404, just bail.
-
-Upload the file to this endpoint (note: no more than 200 KB and it's heavily rate-limited)
+If permission is given, upload the file to this write-only endpoint (note: no more than 500 KB and it's rate-limited)
 
 ```bash
 curl -w '\nStatus: %{http_code}' \
