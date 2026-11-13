@@ -221,6 +221,34 @@ change what you need, and submit the complete object back. The server-set fields
 with it (`score`, `version`, `key`, `info`) are accepted on re-submission, so the fetched
 record needs no scrubbing. Never submit a stub.
 
+**Requesting a deletion.** Set the paper's `id`, add `"mark:delete"` to `flags`, and say
+why in `comment`. When a validator approves that suggestion the paper is deleted instead of
+updated; rejecting it leaves the paper untouched. This is the only submission where a
+partial record is correct — it is acted on as a removal, so it cannot clobber the paper the
+way a partial edit would. `title` is still required by the schema: send the paper's current
+title, or the request fails with a `500`.
+
+```bash
+curl -sf -X POST "https://paperoni.mila.quebec/api/v1/suggest" \
+  -H "Authorization: Bearer $PAPERONI_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"papers": [{"id": "'"$PAPER_ID"'", "title": "'"$TITLE"'", "flags": ["mark:delete"]}],
+       "comment": "Duplicate of <other paper id>: same DOI"}'
+```
+
+Deletion is permanent and nothing in the API restores a paper, so request it only for a
+clear duplicate or a record that plainly does not belong. Wrong *metadata* is an edit, not
+a deletion. The `comment` is stored on the suggestion alongside your identity in
+`info.comments` and is the only context a validator gets, so name the duplicate's ID or
+state the reason rather than writing "remove this".
+
+To watch for deletions awaiting review, including your own:
+
+```bash
+curl -s -H "Authorization: Bearer $PAPERONI_TOKEN" \
+  "https://paperoni.mila.quebec/api/v1/pending/list?flags=mark%3Adelete&limit=20"
+```
+
 **Request body**
 
 ```json
@@ -559,7 +587,14 @@ while True:
 
 ## What this skill does NOT cover
 
-- **Admin / validation endpoints** (`/api/v1/pending/*`, `/api/v1/set_flag`, `/api/v1/focuses`, `/api/v1/work/*`) — these require validator or admin roles and are outside the scope of regular user workflows.
+- **Endpoints that mutate the collection directly** (`POST /api/v1/delete`,
+  `/api/v1/pending/decide`, `/api/v1/set_flag`, `/api/v1/focuses`, `/api/v1/work/*`) —
+  these require validator or admin roles and are outside the scope of regular user
+  workflows. Taking a paper out of the database as a regular user means **requesting** it
+  with the `mark:delete` flag described under `/api/v1/suggest`; never call
+  `/api/v1/delete` yourself. `GET /api/v1/pending/list` is the one exception — it is
+  read-only and available to any authenticated token, which makes it how you check on a
+  suggestion you filed.
 - The web UI at https://paperoni.mila.quebec — for browsing without code. Its
   `/my-papers` page is the hands-on way for a user to claim their own papers, but the
   claiming workflow itself (see the **Claiming papers** section) is covered here.
