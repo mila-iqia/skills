@@ -1,0 +1,39 @@
+- question: "Where does a user get their Paperoni API token?"
+  options:
+    A: "Run `paperoni login` on the Mila cluster"
+    B: "Open https://paperoni.mila.quebec/token in a browser and copy the token shown after the Google OAuth flow"
+    C: "Request it from Mila IT support via email"
+    D: "Generate it with `curl -X POST https://paperoni.mila.quebec/api/v1/token`"
+  answer: B
+
+- question: "In `/api/v1/search`, how do you require an exact author-name match instead of a fuzzy one?"
+  options:
+    A: "Wrap the name in double quotes: `author=\"Yoshua Bengio\"`"
+    B: "Add `&exact=true` to the query string"
+    C: "Prefix the name with `=`: `author==Yoshua Bengio`"
+    D: "Use the `paper_id` parameter instead"
+  answer: C
+
+- question: "What does `POST /api/v1/populate` do?"
+  options:
+    A: "Fetches merged metadata from external links (arXiv, DOI, …) and returns a pre-filled Paper object, without writing anything to the database"
+    B: "Submits the paper directly to the database, bypassing validator review"
+    C: "Backfills missing author affiliations for papers already in the database"
+    D: "Deletes pending suggestions older than 30 days"
+  answer: A
+
+- question: "What must you always do before calling `POST /api/v1/suggest`?"
+  options:
+    A: "Call `/api/v1/populate` to validate the JSON schema"
+    B: "Ask the server for a one-time confirmation code"
+    C: "Search first (by title, DOI link, or author) to confirm the paper is not already in the database"
+    D: "Set the paper's `id` field to a unique integer"
+  answer: C
+
+- question: "How do you know you have reached the last page when paginating `/api/v1/search`?"
+  options:
+    A: "The `results` array is empty"
+    B: "`next_offset` in the response is `null`"
+    C: "The server returns HTTP 204"
+    D: "`count` becomes smaller than `limit`"
+  answer: B
