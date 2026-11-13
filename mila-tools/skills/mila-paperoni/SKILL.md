@@ -4,9 +4,10 @@ description: >-
   Query and manage the Mila Paperoni publication database via its REST API at
   https://paperoni.mila.quebec. Use when the user wants to search for papers,
   look up an author's publications, filter by venue or date, add missing papers,
-  or populate a paper entry from an external link (arXiv, DOI, etc.). Also use
-  when the user asks about the Paperoni API, authentication/token setup, or how
-  to submit a paper suggestion.
+  populate a paper entry from an external link (arXiv, DOI, etc.), or claim papers
+  to their Mila profile with their @mila.quebec email. Also use when the user asks
+  about the Paperoni API, authentication/token setup, which identity a token
+  belongs to, or how to submit a paper suggestion.
 ---
 
 # Paperoni
@@ -22,6 +23,10 @@ All write endpoints and some advanced features require a Bearer token.
 1. Open **https://paperoni.mila.quebec/token** in your browser.
 2. Sign in with your Google account when prompted.
 3. After the OAuth flow completes the page shows your token — copy it.
+
+Your identity in Paperoni **is** the email account you signed in with — the token
+itself is opaque and carries no readable identity. Call `GET /api/v1/me` to read it
+back programmatically.
 
 ### Storing the token
 
@@ -52,6 +57,51 @@ Authorization: Bearer <your-token>
 
 Base URL: `https://paperoni.mila.quebec`
 
+### `GET /api/v1/me` — Who am I?
+
+Returns the identity the Bearer token resolves to: the account's email, its display
+name when one is set, and the capabilities granted to it. Requires authentication but
+**no capability** — any valid token gets a `200`.
+
+Use it to:
+
+- confirm a stored token is valid before a batch of writes;
+- read back the email that identifies you, e.g. the `@mila.quebec` address to put on
+  your papers when claiming them;
+- see which roles a token actually holds, before debugging a `403`;
+- tell a bad token apart from an under-privileged one. `/me` asks for no capability, so
+  it isolates token validity on its own: `401 {"detail":"Authentication required"}` (no
+  header sent), `401 {"detail":"Malformed authorization"}` (header garbled) and
+  `401 {"detail":"Invalid user"}` (token revoked or unknown) all mean the token is the
+  problem. A valid token gets `200` here, and fails only later with
+  `403 {"detail":"validate capability required"}` on a route needing a role it lacks.
+
+**Response** — `email` is always present; `name` is nullable.
+
+```json
+{
+  "email": "jane.doe@mila.quebec",
+  "name": "Jane Doe",
+  "capabilities": ["search", "user", "validate", "admin"]
+}
+```
+
+Capability names are plain strings — `search`, `user`, `validate`, `admin` and
+`user_management` are the ones in use, and a token may carry others (`dev`, for
+instance). A service or automation token may also resolve to something that is not a
+`@mila.quebec` address — if `/me` returns such an identifier, do not use it as the author
+email when claiming papers.
+
+**Example**
+
+```bash
+curl -H "Authorization: Bearer $PAPERONI_TOKEN" \
+  "https://paperoni.mila.quebec/api/v1/me"
+```
+
+
+---
+
 ### `GET /api/v1/search` — Search papers
 
 Returns a paginated list of papers matching the given filters.
@@ -61,7 +111,7 @@ Returns a paginated list of papers matching the given filters.
 | Parameter | Type | Description |
 |---|---|---|
 | `title` | string | Full-text search on the paper title |
-| `author` | string | Author name. Prefix with `=` for an exact match (e.g. `=Yoshua Bengio`) |
+| `author` | string | Author name. Prefix with `=` for an exact match (e.g. `=Yoshua Bengio`). A `@mila.quebec` email also works and is the reliable way to find one researcher's papers |
 | `institution` | string | Institution name of an author |
 | `venue` | string | Venue name (conference, journal, etc.) |
 | `topic` | string[] | Topic tags — all supplied topics must match |
@@ -147,6 +197,13 @@ Given one or more external links (arXiv URL, DOI, Semantic Scholar URL, etc.), t
 
 **Tip:** use `/api/v1/populate` to let the server auto-fill `title`, `abstract`, `authors`, `releases`, and `topics` from an arXiv or DOI link, then pass the result to `/api/v1/suggest`.
 
+**Author emails in harvested metadata are not trustworthy.** arXiv, DOI and Semantic
+Scholar carry either no email or a personal/institutional one. Never copy a personal
+address into the record. Set `authors[].author.email` only where you are sure of the
+person's `@mila.quebec` address and it is already recorded in Paperoni — see the
+**Claiming papers** section — and otherwise leave it `null`. Claiming is not part of
+ingesting a paper; it is a separate, conservative step.
+
 ---
 
 ### `POST /api/v1/suggest` — Suggest adding or editing a paper
@@ -155,7 +212,14 @@ Given one or more external links (arXiv URL, DOI, Semantic Scholar URL, etc.), t
 
 Submits one or more papers for inclusion. The submission enters a pending queue and must be approved by a validator before appearing in search results.
 
-Use an existing paper's ID to edit it. It also works for the ID of a pending paper, if you need to correct a previous suggestion.
+**Editing an existing paper.** Set `id` to the paper's ID; it also works for the ID of a
+pending paper, if you need to correct a previous suggestion. An edit **replaces** the
+paper rather than merging into it: the payload is taken as the paper's new whole contents,
+so whatever you omit — `abstract`, `releases`, `topics`, `links`, co-authors — is gone
+once a validator accepts the edit. Fetch the current record from `/api/v1/paper/{paper_id}`,
+change what you need, and submit the complete object back. The server-set fields that come
+with it (`score`, `version`, `key`, `info`) are accepted on re-submission, so the fetched
+record needs no scrubbing. Never submit a stub.
 
 **Request body**
 
@@ -176,6 +240,11 @@ Use an existing paper's ID to edit it. It also works for the ID of a pending pap
   "ids": ["<pending-paper-id>"]
 }
 ```
+
+The `id` returned is the pending suggestion's, which is also the paper's own ID: a new
+paper keeps that ID once approved, and an edit is filed under the ID it targets, so the
+same ID comes back either way. Multiple edits to one paper share a single queue entry.
+IDs are commonly opaque hex strings rather than the integers the schema admits.
 
 **Typical workflow for adding a missing paper**
 
@@ -200,6 +269,127 @@ curl -X POST "https://paperoni.mila.quebec/api/v1/suggest" \
     "comment": "Missing paper from NeurIPS 2017"
   }'
 ```
+
+---
+
+## Claiming papers
+
+**Claiming** a paper means attaching your `@mila.quebec` email to it as an author —
+`authors[].author.email` — so Paperoni knows the paper is yours.
+
+This is not decoration: **author lookups run on the `@mila.quebec` address.** A paper
+that stores no email, or only a personal one (`@gmail.com`, a former institution's
+domain, an advisor's shared address), will not come back when someone searches for that
+person. The `@mila.quebec` address is the key the lookup uses; a personal email is never
+used for it, so it does not just fail to help — it leaves a record that someone has to
+clean up later.
+
+**Rules**
+
+- **Your own papers: claim freely.** Your address comes from `GET /api/v1/me`, so it
+  cannot be guessed wrong. This applies both to papers you add and to edits you suggest.
+- **Other people's papers: don't fill in emails wholesale.** A wrong address is worse
+  than a missing one. Add a co-author's address only when all three hold:
+  1. they are an **obvious** Mila author — Mila on the paper itself, or a researcher you
+     know to be at Mila;
+  2. that address **already exists in Paperoni attached to that person** (check below);
+  3. you are adding **at most 5** addresses to that one paper. Stop at 5. Papers with a
+     hundred authors are not a to-do list: sweeping them produces a wall of unverifiable
+     edits, buries the validator, and is wrong more often than it is right.
+- **Never construct an address from a name.** It is not reliably
+  `firstname.lastname@mila.quebec` — some carry numeric suffixes, some differ entirely.
+  A constructed address that happens to exist belongs to whoever holds it. If it is not
+  already in the database, treat it as unknown and leave `email` null.
+- **Never a personal address** (`@gmail.com`, a former institution) for anyone. Personal
+  addresses are not used for lookup, so they buy nothing and leave a record to clean up.
+- Leave `display_name` and `author.name` exactly as printed — the claim lives in the
+  `email` field alone. Don't "correct" a name to match an address.
+- External collaborators with no Mila address: leave their `email` null.
+
+**Checking an address exists before using it**
+
+Never attach an email you have not confirmed is already in Paperoni for that person:
+
+```bash
+EMAIL=jane.doe@mila.quebec
+curl -s -H "Authorization: Bearer $PAPERONI_TOKEN" \
+  "https://paperoni.mila.quebec/api/v1/search?author=$EMAIL&limit=5" |
+jq -c --arg e "$EMAIL" \
+  '{total, names: [.results[].authors[] | select(.author.email == $e) | .display_name] | unique}'
+```
+
+Use the address only if `total` is above zero **and** `names` includes the person you are
+about to attach it to. `total: 0` means the address is wrong or has never been recorded —
+either way, leave the field null and let that person claim their own work. This catches
+exactly the near-miss that pattern-matching produces: someone recorded as
+`jane.doe2@mila.quebec` returns `0` for the `jane.doe@mila.quebec` you guessed — and that
+guessed address may itself exist and belong to a different person entirely.
+
+**Claiming via the API**
+
+Fetch the record, change the one email, send the record back whole (an edit replaces —
+see `/api/v1/suggest`).
+
+```bash
+PAPER_ID=6a12f3c0d4e5f6a7b8c9d0e1   # ids are usually hex strings, not integers
+
+# 1. Full current record. Take /paper/{id} as the base for the edit, not a search hit.
+#    -sf makes curl fail on an error response instead of silently handing jq an error
+#    body. What comes back can be fed straight in again as-is: the server-set fields it
+#    carries (score, version, key, info) are accepted.
+curl -sf -H "Authorization: Bearer $PAPERONI_TOKEN" \
+  "https://paperoni.mila.quebec/api/v1/paper/$PAPER_ID" > paper.json
+
+# 2. Set the email for one author only; other authors are left exactly as they were
+jq '(.authors[] | select(.author.name == "Jane Doe") | .author.email)
+    = "jane.doe@mila.quebec"' paper.json > claim.json
+
+# 3. Submit that record back, untouched apart from step 2
+jq -n --slurpfile p claim.json \
+  '{papers: [$p[0]], comment: "Claim: attaching my Mila email"}' |
+curl -sf -X POST "https://paperoni.mila.quebec/api/v1/suggest" \
+  -H "Authorization: Bearer $PAPERONI_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @-
+```
+
+Edits go through the same pending queue as new papers and need a validator.
+Batch-claiming your *own* papers is this loop repeated over the papers you wrote,
+re-fetching each record rather than editing one template. It is not a template for
+filling in co-authors.
+
+**Claiming in the browser**
+
+**https://paperoni.mila.quebec/my-papers** is the interface for reviewing and claiming
+your own papers one at a time. Point a user there when they want to see their own list
+and click through it themselves; use the API when automating or batch-claiming.
+
+**Claiming on someone else's behalf**
+
+A token is not limited to your own record. You may edit anybody's paper, including
+attaching a colleague's `@mila.quebec` address to work they have not claimed yet — useful
+when onboarding someone. It is also the easiest way to attach the wrong address to
+another person's entire publication record, so every check above applies in full, and the
+5-per-paper cap applies to you exactly as it would to anyone else. Two points specific to
+claiming for someone else:
+
+- Use **the author's** address, never your own — the submitter is not the person being
+  claimed.
+- Say so in `comment` ("claiming on behalf of …") so the validator knows why the submitter
+  isn't an author on the paper.
+
+For anything beyond a handful of papers, point the person at `/my-papers` and let them
+claim their own list: they can confirm each entry, and you cannot. Bulk-rewriting a whole
+group's catalogue is not a task to automate on other people's behalf.
+
+**Verify a claim landed** — search by the address once the edit is accepted:
+
+```bash
+curl "https://paperoni.mila.quebec/api/v1/search?author=jane.doe@mila.quebec"
+```
+
+Pending edits are not in search results; check them with `latest_edit=true` on
+`/api/v1/paper/{paper_id}`.
 
 ---
 
@@ -370,4 +560,6 @@ while True:
 ## What this skill does NOT cover
 
 - **Admin / validation endpoints** (`/api/v1/pending/*`, `/api/v1/set_flag`, `/api/v1/focuses`, `/api/v1/work/*`) — these require validator or admin roles and are outside the scope of regular user workflows.
-- The web UI at https://paperoni.mila.quebec — for browsing without code.
+- The web UI at https://paperoni.mila.quebec — for browsing without code. Its
+  `/my-papers` page is the hands-on way for a user to claim their own papers, but the
+  claiming workflow itself (see the **Claiming papers** section) is covered here.

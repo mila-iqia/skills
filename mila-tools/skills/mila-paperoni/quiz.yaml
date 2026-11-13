@@ -37,3 +37,59 @@
     C: "The server returns HTTP 204"
     D: "`count` becomes smaller than `limit`"
   answer: B
+
+- question: "You submit an edit to an existing paper via `POST /api/v1/suggest` with its `id` set, but omit `releases` and one co-author. What happens when a validator accepts it?"
+  options:
+    A: "Only the fields you sent are updated; the omitted `releases` entry and co-author are left untouched"
+    B: "The server rejects the request because a Paper must include every field it currently has"
+    C: "The edit replaces the record wholesale, so the omitted `releases` entry and co-author are removed"
+    D: "The omitted fields are preserved under the paper's `info` field"
+  answer: C
+
+- question: "A paper lists several Mila co-authors whose `authors[].author.email` fields are null. What goes in them?"
+  options:
+    A: "Their `@mila.quebec` addresses, built as `firstname.lastname@mila.quebec` from the display names"
+    B: "Whichever email the PDF or arXiv record lists, even a personal `@gmail.com` one, since the paper must match its publication"
+    C: "Only `@mila.quebec` addresses already recorded in Paperoni for those people, for obvious Mila authors, at most 5 on one paper — otherwise leave them null"
+    D: "The submitter's own `@mila.quebec` address, as the person responsible for the entry"
+  answer: C
+
+- question: "What does `GET /api/v1/me` return, and what does it require?"
+  options:
+    A: "A freshly minted token for the caller; requires the `admin` capability"
+    B: "The caller's email, display name, and capabilities; requires only authentication, no capability"
+    C: "The list of papers the caller has claimed; requires the `search` capability"
+    D: "The server's version and title; requires no authentication at all"
+  answer: B
+
+- question: "A new colleague has not claimed any of their papers. What can you do with your own token?"
+  options:
+    A: "Nothing — a token can only edit papers where the submitter is an author"
+    B: "Claim them with your own `@mila.quebec` email and let a validator reassign them later"
+    C: "Ask a validator to edit the database directly, since third-party edits are not supported"
+    D: "Edit them on their behalf, under the same checks as any other claim: the full record back, *their* `@mila.quebec` email already recorded in Paperoni, at most 5 per paper, and a `comment` saying you are claiming for them"
+  answer: D
+
+- question: "Where does a user go to review and claim their own papers one at a time, without using the API?"
+  options:
+    A: "https://paperoni.mila.quebec/token"
+    B: "https://paperoni.mila.quebec/my-papers"
+    C: "https://paperoni.mila.quebec/capabilities"
+    D: "https://paperoni.mila.quebec/api/v1/pending/list"
+  answer: B
+
+- question: "Why must an author's `@mila.quebec` address be looked up in Paperoni rather than derived from their name?"
+  options:
+    A: "Because the API rejects any email it has not seen before"
+    B: "Because addresses are not reliably derivable — some carry numeric suffixes or differ from the display name, so a guessed address may belong to someone else or to nobody"
+    C: "Because author search matches on display name only"
+    D: "Because validators reject every edit that changes an email field"
+  answer: B
+
+- question: "Before attaching an email to a co-author, you run `search?author=<email>` and filter the results for that email. What result means you may proceed?"
+  options:
+    A: "`total` above zero and the `display_name`s on those papers include the person you are attaching it to"
+    B: "Any HTTP `200` response, since the address was accepted by the server"
+    C: "`count` equal to `limit`, which means the address is complete"
+    D: "An empty `results` array, meaning the address is not already used by someone else"
+  answer: A
