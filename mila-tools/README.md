@@ -11,6 +11,7 @@ This directory contains Claude Code configuration for the [Mila documentation](h
 | `mila-connect-cluster` | "How do I connect to the cluster", "How do I SSH", "I can't connect", "permission denied", "host key verification failed", "OTP" | Guides through SSH connection, OTP entry, and connection troubleshooting |
 | `mila-run-jobs` | "How do I run a job", "mila code", "sbatch", "How do I use a GPU", "check available GPUs", "nvidia-smi", "train a model", "job queue" | Guides through interactive development with `mila code` and batch job submission with `sbatch` |
 | `mila-sarc` | "How many jobs did I run", "GPU/RGU utilization", "compute usage", "How much GPU am I wasting", "Mila/DRAC usage stats" | Fetches job, user, cluster and usage data over HTTP from the SARC API (`sarc.mila.quebec`) |
+| `mila-paperoni` | "Search papers", "find a paper", "publications of a researcher", "add a paper to Paperoni", "Paperoni API/token" | Queries and writes to the Paperoni publication database over HTTP (`paperoni.mila.quebec`): search, fetch, populate from arXiv/DOI, suggest papers |
 | `mila-base` | *(shared policy — not invoked directly)* | Provides the command execution policy and skill chain routing used by all mila-* skills |
 
 ## Usage
