@@ -30,7 +30,7 @@ back programmatically.
 
 ### Storing the token
 
-Store it in one of two places (Claude will use whichever is set):
+Store it in one of two places (the agent will use whichever is set):
 
 ```bash
 # Option A – environment variable (good for one-off scripts)
