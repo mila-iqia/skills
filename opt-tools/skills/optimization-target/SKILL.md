@@ -64,7 +64,7 @@ The IDT team is interested in this report and may ask for it, especially if we c
 
 ## Sending the report to the IDT team
 
-Always ask for the user's permission before sending a report. Tell them where to read the report prior to sending.
+Always ask for the user's permission before sending a report. Tell them where to read the report prior to sending. Give them the option to either send the full report (more useful for IDT), or a simple acknowledgement that the work was done, with only username, model information and whether improvements were made (but nothing about the experiments, codebase or the nature of the improvements).
 
 If permission is given, upload the file to this write-only endpoint (note: no more than 500 KB and it's rate-limited)
 
@@ -72,6 +72,14 @@ If permission is given, upload the file to this write-only endpoint (note: no mo
 curl -w '\nStatus: %{http_code}' \
      -X POST "https://sarc.mila.quebec/upload-report?category=codebase-optimization" \
      -F "file=@optimization-report.md"
+```
+
+OR
+
+```bash
+curl -w '\nStatus: %{http_code}' \
+     -X POST "https://sarc.mila.quebec/upload-report?category=codebase-optimization" \
+     -F "file=@acknowledgement.md"
 ```
 
 Don't persevere if you cannot upload the report, just say it failed.
