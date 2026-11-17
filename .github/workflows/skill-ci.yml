@@ -59,8 +59,8 @@ jobs:
           python-version: '3.14'
 
       - name: Install docmetrics
-        # TODO: switch back to @master once mila-iqia/docmetrics#27 (OpenAI-compatible backend) is merged.
-        run: pip install "git+https://github.com/mila-iqia/docmetrics.git@feat/openai-compatible-backend"
+        # 0.0.9 adds the OpenAI-compatible backend (`openai:` model prefix) used for Cairn.
+        run: pip install "docmetrics==0.0.9"
 
       - name: Run docmetrics for each skill
         env:
