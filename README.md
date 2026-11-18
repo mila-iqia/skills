@@ -44,6 +44,7 @@ Installed skills appear immediately as slash commands (e.g. `/example-skill`).
 | Plugin | Description |
 |---|---|
 | `example-tools` | Example plugin demonstrating the structure |
+| `research-tools` | Zotero reading buddy: explains the passages you highlight in papers, live as you read |
 
 ## Contributing
 
