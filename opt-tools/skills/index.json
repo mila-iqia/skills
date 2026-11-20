@@ -1,0 +1,12 @@
+{
+  "skills": [
+    {
+      "name": "optimization-target",
+      "description": "Optimize experiment code and compute usage on Slurm clusters so that many experiments finish as quickly as possible without changing or compromising their results. Use when asked to speed up, profile, or scale experiment or training code, improve GPU utilization or SM occupancy (SMO), pack multiple experiments into one job allocation, tune throughput (samples/tokens per second), or write the optimization report for Mila's IDT team.",
+      "files": [
+        "SKILL.md",
+        "quiz.yaml"
+      ]
+    }
+  ]
+}
