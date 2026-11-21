@@ -59,9 +59,12 @@ jobs:
           python-version: '3.14'
 
       - name: Install docmetrics
-        run: pip install "git+https://github.com/mila-iqia/docmetrics.git@master"
+        # 0.0.9 adds the OpenAI-compatible backend (`openai:` model prefix) used for Cairn.
+        run: pip install "docmetrics==0.0.9"
 
       - name: Run docmetrics for each skill
+        env:
+          OPENAI_API_KEY: ${{ secrets.CAIRN_API_KEY }}
         run: |
           while IFS= read -r dir; do
             [ -z "$dir" ] && continue
@@ -73,8 +76,8 @@ jobs:
             python -m docmetrics \
               --questions "$dir/quiz.yaml" \
               --docs-file "$dir/SKILL.md" \
-              --model ollama:gemma4:e2b \
-              --ollama-url=dgx:11434 \
+              --model openai:Qwen/Qwen3.8-Flash-Next-FP8 \
+              --openai-url=http://cn-d003.server.mila.quebec:8080/v1 \
               --num-candidates 3 \
               --output-format json > "$RUNNER_TEMP/skill-results/$SLUG/current.json"
 
@@ -86,8 +89,8 @@ jobs:
                 python -m docmetrics \
                   --questions "$dir/quiz.yaml" \
                   --docs-file "$RUNNER_TEMP/base-skill.md" \
-                  --model ollama:gemma4:e2b \
-                  --ollama-url=dgx:11434 \
+                  --model openai:Qwen/Qwen3.8-Flash-Next-FP8 \
+                  --openai-url=http://cn-d003.server.mila.quebec:8080/v1 \
                   --num-candidates 3 \
                   --output-format json > "$RUNNER_TEMP/skill-results/$SLUG/base.json"
               fi
