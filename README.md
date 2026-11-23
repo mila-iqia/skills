@@ -47,10 +47,8 @@ To load them, add the URLs you want to `opencode.json`:
 ```json
 {
   "skills": {
-    "urls": [
       "https://mila-iqia.github.io/skills/opt-tools/skills",
       "https://mila-iqia.github.io/skills/mila-tools/skills"
-    ]
   }
 }
 ```

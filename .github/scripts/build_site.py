@@ -5,7 +5,7 @@ For every plugin folder that has a ``skills/`` directory, this copies the
 local skills into ``_site/<plugin>/skills/``, adds the skills listed in the
 optional ``<plugin>/upstream.json`` (fetched from their upstream git repos,
 never committed here), and writes a generated ``index.json`` in the format
-OpenCode expects for ``skills.urls``:
+OpenCode expects for ``skills``:
 
     {"skills": [{"name", "description", "files", "version"}]}
 
