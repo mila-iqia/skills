@@ -19,6 +19,22 @@
       "name": "opt-tools",
       "source": "./opt-tools",
       "description": "Skills for optimizing experiment code and compute resource usage on Slurm clusters"
+    },
+    {
+      "name": "pytorch-opt-skills",
+      "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
+      "source": {
+        "source": "github",
+        "repo": "srygaard/optimization-skills",
+        "ref": "main",
+        "sha": "102eebca6f6cdd867ad0548a2a578883ecc4cb15"
+      },
+      "skills": [
+        "./pytorch-compile",
+        "./pytorch-dataloader",
+        "./pytorch-profiler",
+        "./pytorch-profiler-full"
+      ]
     }
   ]
 }

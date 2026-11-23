@@ -44,6 +44,9 @@ Installed skills appear immediately as slash commands (e.g. `/example-skill`).
 | Plugin | Description |
 |---|---|
 | `example-tools` | Example plugin demonstrating the structure |
+| `mila-tools` | Skills for Mila users: cluster account and local setup, SSH connection, running jobs, and the SARC and Paperoni data APIs |
+| `opt-tools` | Skills for optimizing experiment code and compute resource usage on Slurm clusters |
+| `pytorch-opt-skills` | PyTorch optimization Skills (torch.compile, DataLoader, profiler) |
 
 ## Contributing
 
