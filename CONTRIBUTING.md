@@ -48,6 +48,38 @@
    ```
 4. Open a PR.
 
+## Referencing skills from another repository
+
+To include skills from another GitHub repository without copying them, add an entry to the `upstream.json` of the plugin they belong with (for example `opt-tools/upstream.json`):
+
+```json
+[
+  {
+    "name": "pytorch-opt-skills",
+    "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
+    "repo": "srygaard/optimization-skills",
+    "ref": "main",
+    "skills": ["pytorch-compile", "pytorch-dataloader"]
+  }
+]
+```
+
+- `name`: the name of the Claude Code plugin to install (`/plugin install <name>@mila-skills`).
+- `skills`: folders in that repo that each contain a `SKILL.md`.
+- `sha` (optional): a full 40-character commit SHA to pin a version. Without it, both harnesses follow `ref`.
+
+Then regenerate the marketplace and open a PR:
+
+```
+python .github/scripts/sync_marketplace.py
+```
+
+This one file drives both harnesses:
+- **Claude Code**: `sync_marketplace.py` writes a separate plugin entry with an external GitHub source in `.claude-plugin/marketplace.json`. Do not edit those entries by hand; CI (`marketplace-check.yml`) fails if they are out of sync.
+- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and adds them to the plugin's URL, e.g. `https://mila-iqia.github.io/skills/opt-tools/skills`.
+
+Upstream skills don't need a `quiz.yaml`, because they are not stored in this repo.
+
 ## Quiz requirement
 
 Every skill must include a `quiz.yaml` alongside its `SKILL.md`. CI uses [docmetrics](https://github.com/mila-iqia/docmetrics) to verify that the skill content actually helps an LLM answer the questions — if the score doesn't improve when the skill is provided as context, the PR fails.

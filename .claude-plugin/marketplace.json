@@ -1,6 +1,8 @@
 {
   "name": "mila-skills",
-  "owner": { "name": "Mila" },
+  "owner": {
+    "name": "Mila"
+  },
   "metadata": {
     "description": "Skill marketplace for Mila researchers"
   },
@@ -22,12 +24,11 @@
     },
     {
       "name": "pytorch-opt-skills",
-      "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
+      "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler) (from srygaard/optimization-skills)",
       "source": {
         "source": "github",
         "repo": "srygaard/optimization-skills",
-        "ref": "main",
-        "sha": "102eebca6f6cdd867ad0548a2a578883ecc4cb15"
+        "ref": "main"
       },
       "skills": [
         "./pytorch-compile",

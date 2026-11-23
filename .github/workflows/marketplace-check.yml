@@ -1,0 +1,32 @@
+name: Marketplace sync check
+
+# The external-plugin entries of .claude-plugin/marketplace.json are generated
+# from */upstream.json by .github/scripts/sync_marketplace.py. This fails if
+# someone edited one without regenerating the other.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '**/upstream.json'
+      - '.claude-plugin/marketplace.json'
+      - '.github/scripts/sync_marketplace.py'
+  pull_request:
+    paths:
+      - '**/upstream.json'
+      - '.claude-plugin/marketplace.json'
+      - '.github/scripts/sync_marketplace.py'
+
+permissions:
+  contents: read
+
+jobs:
+  marketplace-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check marketplace.json matches upstream.json
+        run: python .github/scripts/sync_marketplace.py --check
