@@ -50,7 +50,7 @@
 
 ## Referencing skills from another repository
 
-To include skills from another GitHub repository without copying them, add an entry to the `upstream.json` of the plugin they belong with (for example `opt-tools/upstream.json`):
+To include skills from another GitHub repository without copying them, add an entry to the `upstream.json` of the plugin they belong with (for example `pytorch-opt-skills/upstream.json`):
 
 ```json
 [
@@ -76,7 +76,7 @@ python .github/scripts/sync_marketplace.py
 
 This one file drives both harnesses:
 - **Claude Code**: `sync_marketplace.py` writes a separate plugin entry with an external GitHub source in `.claude-plugin/marketplace.json`. Do not edit those entries by hand; CI (`marketplace-check.yml`) fails if they are out of sync.
-- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and adds them to the plugin's URL, e.g. `https://mila-iqia.github.io/skills/opt-tools/skills`.
+- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and adds them to the plugin's URL, e.g. `https://mila-iqia.github.io/skills/pytorch-opt-skills/skills`.
 
 Upstream skills don't need a `quiz.yaml`, because they are not stored in this repo.
 
