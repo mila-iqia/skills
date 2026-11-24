@@ -24,7 +24,7 @@
     },
     {
       "name": "pytorch-opt-skills",
-      "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler) (from srygaard/optimization-skills)",
+      "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
       "source": {
         "source": "github",
         "repo": "srygaard/optimization-skills",
