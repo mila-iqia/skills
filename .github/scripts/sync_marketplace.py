@@ -59,9 +59,6 @@ def to_marketplace_entry(up: dict) -> dict:
     if up.get("sha"):
         source["sha"] = up["sha"]
     description = up.get("description", "").strip()
-    suffix = f"(from {up['repo']})"
-    if suffix not in description:
-        description = f"{description} {suffix}".strip()
     return {
         "name": up["name"],
         "description": description,

@@ -125,10 +125,13 @@ def build_plugin(plugin: Path, out: Path, workdir: Path) -> int:
     site_skills = out / plugin.name / "skills"
     site_skills.mkdir(parents=True)
 
+
     # 1. Local skills.
-    for skill in sorted((plugin / "skills").iterdir()):
-        if (skill / "SKILL.md").is_file():
-            copy_skill(skill, site_skills / skill.name)
+    local = plugin / "skills"
+    if local.is_dir():
+        for skill in sorted((plugin / "skills").iterdir()):
+            if (skill / "SKILL.md").is_file():
+                copy_skill(skill, site_skills / skill.name)
 
     # 2. Upstream skills (fetched at build time, not committed).
     upstream_file = plugin / "upstream.json"
@@ -179,8 +182,9 @@ def main() -> None:
     (out / ".nojekyll").touch()
 
     plugins = sorted(
-        p for p in REPO_ROOT.iterdir()
-        if (p / ".claude-plugin" / "plugin.json").is_file() and (p / "skills").is_dir()
+    p for p in REPO_ROOT.iterdir()
+    if ((p / ".claude-plugin" / "plugin.json").is_file() and (p / "skills").is_dir())
+    or (p / "upstream.json").is_file()
     )
     with tempfile.TemporaryDirectory() as tmp:
         for plugin in plugins:
