@@ -1,15 +1,17 @@
 name: Publish skills site
 
-# Builds a static site with every plugin's skills (including upstream skills
-# declared in <plugin>/upstream.json, fetched at build time) plus a generated
-# index.json, and publishes it to GitHub Pages so OpenCode can load e.g.
+# Builds a static site with the skills of every plugin listed in
+# .claude-plugin/marketplace.json (external plugins are fetched at build time)
+# plus a generated index.json per plugin, and publishes it to GitHub Pages so
+# OpenCode can load e.g.
 #   https://mila-iqia.github.io/skills/opt-tools/skills
+#   https://mila-iqia.github.io/skills/pytorch-opt-skills/skills
 
 on:
   push:
     branches: [master]
   schedule:
-    - cron: '0 6 * * 1' # weekly, to pick up upstream skill changes
+    - cron: '0 6 * * 1' # weekly, to pick up changes in external plugins
   workflow_dispatch:
 
 permissions:

@@ -50,35 +50,32 @@
 
 ## Referencing skills from another repository
 
-To include skills from another GitHub repository without copying them, add an entry to the `upstream.json` of the plugin they belong with (for example `opt-tools/upstream.json`):
+To include skills from another repository without copying them, add an external plugin entry to `.claude-plugin/marketplace.json`:
 
 ```json
-[
-  {
-    "name": "pytorch-opt-skills",
-    "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
+{
+  "name": "pytorch-opt-skills",
+  "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
+  "source": {
+    "source": "github",
     "repo": "srygaard/optimization-skills",
-    "ref": "main",
-    "skills": ["pytorch-compile", "pytorch-dataloader"]
-  }
-]
+    "ref": "main"
+  },
+  "skills": ["./pytorch-compile", "./pytorch-dataloader"]
+}
 ```
 
-- `name`: the name of the Claude Code plugin to install (`/plugin install <name>@mila-skills`).
-- `skills`: folders in that repo that each contain a `SKILL.md`.
-- `sha` (optional): a full 40-character commit SHA to pin a version. Without it, both harnesses follow `ref`.
+- `name`: the name of the Claude Code plugin (`/plugin install <name>@mila-skills`) and of its OpenCode URL (`https://mila-iqia.github.io/skills/<name>/skills`).
+- `source`: a `github` source (`repo`), or a `url` or `git-subdir` source as described in the [Claude Code docs](https://code.claude.com/docs/en/plugin-marketplaces). Add `"sha": "<40-character commit SHA>"` to pin a version; otherwise both harnesses follow `ref`.
+- `skills` (optional): folders, relative to the plugin root, that each contain a `SKILL.md`. Without it, every skill under the plugin's `skills/` directory is used.
 
-Then regenerate the marketplace and open a PR:
+To remove external skills, delete the entry (or the paths in `skills`). That one file drives both harnesses:
+- **Claude Code** reads `marketplace.json` directly.
+- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and publishes them with a generated `index.json`. On a PR, `marketplace-check.yml` runs the same build to check that the repo, ref and skills exist.
 
-```
-python .github/scripts/sync_marketplace.py
-```
+To check locally: `python .github/scripts/build_site.py --only <name>`.
 
-This one file drives both harnesses:
-- **Claude Code**: `sync_marketplace.py` writes a separate plugin entry with an external GitHub source in `.claude-plugin/marketplace.json`. Do not edit those entries by hand; CI (`marketplace-check.yml`) fails if they are out of sync.
-- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and adds them to the plugin's URL, e.g. `https://mila-iqia.github.io/skills/opt-tools/skills`.
-
-Upstream skills don't need a `quiz.yaml`, because they are not stored in this repo.
+External skills don't need a `quiz.yaml`, because they are not stored in this repo.
 
 ## Quiz requirement
 

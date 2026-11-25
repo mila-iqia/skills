@@ -1,22 +1,30 @@
 #!/usr/bin/env python3
 """Build the static skills site served by GitHub Pages.
 
-For every plugin folder that has a ``skills/`` directory, this copies the
-local skills into ``_site/<plugin>/skills/``, adds the skills listed in the
-optional ``<plugin>/upstream.json`` (fetched from their upstream git repos,
-never committed here), and writes a generated ``index.json`` in the format
-OpenCode expects for ``skills.urls``:
+``.claude-plugin/marketplace.json`` is the single source of truth: every plugin
+listed there gets ``_site/<plugin-name>/skills/`` with its skills and a
+generated ``index.json`` in the format OpenCode expects for ``skills``:
 
     {"skills": [{"name", "description", "files", "version"}]}
 
 ``version`` is a hash of the skill's contents, so OpenCode re-downloads a
 skill only when it actually changed.
 
-upstream.json format (also used by sync_marketplace.py for Claude Code):
-    [{"name": "plugin-name", "description": "...", "repo": "owner/name",
-      "ref": "main", "sha": "<optional pin>", "skills": ["dir-a", "dir-b"]}]
+Plugin sources:
+- local (``"source": "./<dir>"``): skills are copied from this repo.
+- external (``"source": {"source": "github", "repo": "owner/name", ...}``,
+  or ``"url"`` / ``"git-subdir"``): the repo is fetched at build time at the
+  same ``ref`` / ``sha`` Claude Code uses, and never committed here.
 
-Usage: python .github/scripts/build_site.py [--out _site]
+Which skills are published follows Claude Code: the plugin's ``skills`` list
+(paths relative to the plugin root) if present, otherwise every folder with a
+``SKILL.md`` under the plugin's ``skills/`` directory.
+
+To add or remove an external plugin, edit marketplace.json only.
+
+Usage:
+    python .github/scripts/build_site.py [--out _site]
+    python .github/scripts/build_site.py --only pytorch-opt-skills
 """
 
 from __future__ import annotations
@@ -31,6 +39,7 @@ import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+MARKETPLACE = REPO_ROOT / ".claude-plugin" / "marketplace.json"
 IGNORED_NAMES = {"__pycache__", ".DS_Store"}
 LICENSE_NAMES = ("LICENSE", "LICENSE.md", "LICENSE.txt", "COPYING")
 
@@ -99,57 +108,81 @@ def frontmatter_description(skill_md: Path) -> str:
     return ""
 
 
-def fetch_upstream(entry: dict, workdir: Path) -> Path:
-    repo, ref, sha = entry["repo"], entry.get("ref", "main"), entry.get("sha")
-    url = f"https://github.com/{repo}.git"
-    dest = workdir / repo.replace("/", "__")
-    if sha:
-        # Pinned: fetch exactly that commit (same as the Claude Code entry).
-        git = ["git", "-C", str(dest)]
-        dest.mkdir(parents=True)
-        subprocess.run(git + ["init", "--quiet"], check=True)
-        subprocess.run(git + ["fetch", "--quiet", "--depth", "1", url, sha], check=True)
-        subprocess.run(git + ["checkout", "--quiet", "FETCH_HEAD"], check=True)
-    else:
-        subprocess.run(
-            ["git", "clone", "--quiet", "--depth", "1", "--branch", ref, url, str(dest)],
-            check=True,
-        )
-    head = subprocess.run(["git", "-C", str(dest), "rev-parse", "HEAD"],
+def git_url(source: dict) -> str:
+    kind = source.get("source")
+    if kind == "github":
+        return f"https://github.com/{source['repo']}.git"
+    if kind in ("url", "git-subdir"):
+        return source["url"]
+    fail(f"unsupported plugin source type: {kind!r} (expected github, url or git-subdir)")
+
+
+def fetch_external(name: str, source: dict, workdir: Path) -> Path:
+    """Clone an external plugin source and return the plugin root."""
+    url, ref, sha = git_url(source), source.get("ref"), source.get("sha")
+    dest = workdir / name
+    git = ["git", "-C", str(dest)]
+    dest.mkdir(parents=True)
+    subprocess.run(git + ["init", "--quiet"], check=True)
+    # Pinned sha wins (same as Claude Code); otherwise follow ref, or the default branch.
+    subprocess.run(git + ["fetch", "--quiet", "--depth", "1", url, sha or ref or "HEAD"],
+                   check=True)
+    subprocess.run(git + ["checkout", "--quiet", "FETCH_HEAD"], check=True)
+    head = subprocess.run(git + ["rev-parse", "HEAD"],
                           check=True, capture_output=True, text=True).stdout.strip()
-    print(f"  fetched {repo}@{sha or ref} -> {head}")
-    return dest
+    print(f"  fetched {url}@{sha or ref or 'HEAD'} -> {head}")
+    root = dest / source.get("path", "")
+    if not root.is_dir():
+        fail(f"{name}: path '{source.get('path')}' not found in {url}")
+    return root
 
 
-def build_plugin(plugin: Path, out: Path, workdir: Path) -> int:
-    site_skills = out / plugin.name / "skills"
+def find_license(root: Path, stop: Path) -> Path | None:
+    """Closest license file from the plugin root up to the repo root."""
+    for d in [root, *root.parents]:
+        for n in LICENSE_NAMES:
+            if (d / n).is_file():
+                return d / n
+        if d == stop:
+            break
+    return None
+
+
+def plugin_skill_dirs(plugin: dict, root: Path) -> list[Path]:
+    if plugin.get("skills"):
+        dirs = [(root / s).resolve() for s in plugin["skills"]]
+        for d in dirs:
+            if not (d / "SKILL.md").is_file():
+                fail(f"{plugin['name']}: '{d.relative_to(root.resolve())}/SKILL.md' not found")
+        return dirs
+    skills_root = root / "skills"
+    if not skills_root.is_dir():
+        fail(f"{plugin['name']}: no 'skills' list and no skills/ directory")
+    return sorted(d for d in skills_root.iterdir() if (d / "SKILL.md").is_file())
+
+
+def build_plugin(plugin: dict, out: Path, workdir: Path) -> int:
+    name, source = plugin["name"], plugin["source"]
+    site_skills = out / name / "skills"
     site_skills.mkdir(parents=True)
 
-    # 1. Local skills.
-    for skill in sorted((plugin / "skills").iterdir()):
-        if (skill / "SKILL.md").is_file():
-            copy_skill(skill, site_skills / skill.name)
+    if isinstance(source, str):
+        root = (REPO_ROOT / source).resolve()
+        license_file = None  # local skills are covered by this repo's LICENSE
+    else:
+        root = fetch_external(name, source, workdir)
+        license_file = find_license(root, workdir / name)
 
-    # 2. Upstream skills (fetched at build time, not committed).
-    upstream_file = plugin / "upstream.json"
-    if upstream_file.is_file():
-        for entry in json.loads(upstream_file.read_text()):
-            clone = fetch_upstream(entry, workdir)
-            license_file = next(
-                (clone / n for n in LICENSE_NAMES if (clone / n).is_file()), None
-            )
-            for name in entry["skills"]:
-                src = clone / name
-                if not (src / "SKILL.md").is_file():
-                    fail(f"{entry['repo']}: '{name}/SKILL.md' not found upstream")
-                dst = site_skills / name
-                if dst.exists():
-                    fail(f"{plugin.name}: skill '{name}' is defined twice")
-                copy_skill(src, dst)
-                if license_file and not (dst / license_file.name).exists():
-                    shutil.copy2(license_file, dst / license_file.name)
+    # 1. Copy skills.
+    for src in plugin_skill_dirs(plugin, root):
+        dst = site_skills / src.name
+        if dst.exists():
+            fail(f"{name}: skill '{src.name}' is defined twice")
+        copy_skill(src, dst)
+        if license_file and not (dst / license_file.name).exists():
+            shutil.copy2(license_file, dst / license_file.name)
 
-    # 3. Generated index.json.
+    # 2. Generated index.json.
     skills = []
     for skill in sorted(p for p in site_skills.iterdir() if p.is_dir()):
         files = skill_files(skill)
@@ -163,14 +196,26 @@ def build_plugin(plugin: Path, out: Path, workdir: Path) -> int:
         json.dumps({"skills": skills}, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
-    print(f"  {plugin.name}: {len(skills)} skills -> {site_skills / 'index.json'}")
+    print(f"  {name}: {len(skills)} skills -> {site_skills / 'index.json'}")
     return len(skills)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", default=str(REPO_ROOT / "_site"))
+    parser.add_argument("--only", nargs="+", metavar="PLUGIN",
+                        help="build only these plugins (default: all)")
     args = parser.parse_args()
+
+    plugins = json.loads(MARKETPLACE.read_text(encoding="utf-8"))["plugins"]
+    names = [p["name"] for p in plugins]
+    if len(set(names)) != len(names):
+        fail("duplicate plugin names in marketplace.json")
+    if args.only:
+        unknown = set(args.only) - set(names)
+        if unknown:
+            fail(f"not in marketplace.json: {sorted(unknown)}")
+        plugins = [p for p in plugins if p["name"] in args.only]
 
     out = Path(args.out).resolve()
     if out.exists():
@@ -178,13 +223,9 @@ def main() -> None:
     out.mkdir(parents=True)
     (out / ".nojekyll").touch()
 
-    plugins = sorted(
-        p for p in REPO_ROOT.iterdir()
-        if (p / ".claude-plugin" / "plugin.json").is_file() and (p / "skills").is_dir()
-    )
     with tempfile.TemporaryDirectory() as tmp:
         for plugin in plugins:
-            print(f"Building {plugin.name}")
+            print(f"Building {plugin['name']}")
             build_plugin(plugin, out, Path(tmp))
 
 

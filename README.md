@@ -41,24 +41,21 @@ Installed skills appear immediately as slash commands (e.g. `/example-skill`).
 
 ### Using the skills with OpenCode
 
-Every plugin's skills are published to GitHub Pages together with a generated `index.json`.
+The skills of every plugin in [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) are published to GitHub Pages at
+`https://mila-iqia.github.io/skills/<plugin>/skills`, together with a generated `index.json`.
 To load them, add the URLs you want to `opencode.json`:
 
 ```json
 {
-  "skills": {
-    "urls": [
-      "https://mila-iqia.github.io/skills/opt-tools/skills",
-      "https://mila-iqia.github.io/skills/mila-tools/skills"
-    ]
-  }
+  "skills": [
+    "https://mila-iqia.github.io/skills/opt-tools/skills",
+    "https://mila-iqia.github.io/skills/mila-tools/skills",
+    "https://mila-iqia.github.io/skills/pytorch-opt-skills/skills"
+  ]
 }
 ```
 
-The `opt-tools` URL also serves the skills from
-[srygaard/optimization-skills](https://github.com/srygaard/optimization-skills)
-(`pytorch-compile`, `pytorch-dataloader`, `pytorch-profiler`, `pytorch-profiler-full`).
-They are listed in [`opt-tools/upstream.json`](opt-tools/upstream.json) and fetched when the site is built
+External plugins (such as `pytorch-opt-skills`) are fetched from their repository when the site is built
 (see [`.github/workflows/pages.yml`](.github/workflows/pages.yml)), which happens on every push to `master` and once a week.
 Each skill's `version` is a hash of its content, so OpenCode only re-downloads skills that changed.
 
@@ -73,8 +70,7 @@ Each skill's `version` is a hash of its content, so OpenCode only re-downloads s
 
 `pytorch-opt-skills` is an external plugin that points to
 [srygaard/optimization-skills](https://github.com/srygaard/optimization-skills). Its skills are not copied into this repo.
-Its entry in `marketplace.json` is generated from [`opt-tools/upstream.json`](opt-tools/upstream.json),
-the same file that bundles these skills into the `opt-tools` OpenCode URL, so both harnesses always use the same repo, ref and commit.
+Its entry in `marketplace.json` is used by both Claude Code and the OpenCode site, so both harnesses always use the same repo, ref and commit.
 See [CONTRIBUTING.md](CONTRIBUTING.md#referencing-skills-from-another-repository).
 
 ## Contributing
