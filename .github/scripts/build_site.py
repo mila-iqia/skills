@@ -166,12 +166,22 @@ def build_plugin(plugin: dict, out: Path, workdir: Path) -> int:
     site_skills = out / name / "skills"
     site_skills.mkdir(parents=True)
 
+<<<<<<< HEAD
     if isinstance(source, str):
         root = (REPO_ROOT / source).resolve()
         license_file = None  # local skills are covered by this repo's LICENSE
     else:
         root = fetch_external(name, source, workdir)
         license_file = find_license(root, workdir / name)
+=======
+
+    # 1. Local skills.
+    local = plugin / "skills"
+    if local.is_dir():
+        for skill in sorted((plugin / "skills").iterdir()):
+            if (skill / "SKILL.md").is_file():
+                copy_skill(skill, site_skills / skill.name)
+>>>>>>> 360e4273cf4b77a44643f0305db6cf9d5d72ea34
 
     # 1. Copy skills.
     for src in plugin_skill_dirs(plugin, root):

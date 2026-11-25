@@ -75,7 +75,15 @@ To remove external skills, delete the entry (or the paths in `skills`). That one
 
 To check locally: `python .github/scripts/build_site.py --only <name>`.
 
+<<<<<<< HEAD
 External skills don't need a `quiz.yaml`, because they are not stored in this repo.
+=======
+This one file drives both harnesses:
+- **Claude Code**: `sync_marketplace.py` writes a separate plugin entry with an external GitHub source in `.claude-plugin/marketplace.json`. Do not edit those entries by hand; CI (`marketplace-check.yml`) fails if they are out of sync.
+- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and adds them to the plugin's URL, e.g. `https://mila-iqia.github.io/skills/pytorch-opt-skills/skills`.
+
+Upstream skills don't need a `quiz.yaml`, because they are not stored in this repo.
+>>>>>>> 360e4273cf4b77a44643f0305db6cf9d5d72ea34
 
 ## Quiz requirement
 

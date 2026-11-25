@@ -70,7 +70,8 @@ Each skill's `version` is a hash of its content, so OpenCode only re-downloads s
 
 `pytorch-opt-skills` is an external plugin that points to
 [srygaard/optimization-skills](https://github.com/srygaard/optimization-skills). Its skills are not copied into this repo.
-Its entry in `marketplace.json` is used by both Claude Code and the OpenCode site, so both harnesses always use the same repo, ref and commit.
+Its skills are not copied into this repo. Its entry in `marketplace.json` is described in [`.claude/marketplace.json`](.claude/marketplace.json) and generated.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md#referencing-skills-from-another-repository).
 
 ## Contributing
