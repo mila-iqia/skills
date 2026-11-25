@@ -1,0 +1,26 @@
+name: Marketplace check
+
+# .claude-plugin/marketplace.json is the single source of truth for both
+# Claude Code and the OpenCode site. This builds the site (without deploying)
+# to check that every plugin, including external ones, resolves to valid
+# skills: the repo/ref/sha exists and each listed skill has a SKILL.md.
+
+on:
+  pull_request:
+    paths:
+      - '.claude-plugin/marketplace.json'
+      - '.github/scripts/build_site.py'
+
+permissions:
+  contents: read
+
+jobs:
+  build-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build site from marketplace.json
+        run: python .github/scripts/build_site.py --out _site

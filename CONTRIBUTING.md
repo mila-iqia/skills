@@ -48,6 +48,35 @@
    ```
 4. Open a PR.
 
+## Referencing skills from another repository
+
+To include skills from another repository without copying them, add an external plugin entry to `.claude-plugin/marketplace.json`:
+
+```json
+{
+  "name": "pytorch-opt-skills",
+  "description": "PyTorch optimization Skills (torch.compile, DataLoader, profiler)",
+  "source": {
+    "source": "github",
+    "repo": "srygaard/optimization-skills",
+    "ref": "main"
+  },
+  "skills": ["./pytorch-compile", "./pytorch-dataloader"]
+}
+```
+
+- `name`: the name of the Claude Code plugin (`/plugin install <name>@mila-skills`) and of its OpenCode URL (`https://mila-iqia.github.io/skills/<name>/skills`).
+- `source`: a `github` source (`repo`), or a `url` or `git-subdir` source as described in the [Claude Code docs](https://code.claude.com/docs/en/plugin-marketplaces). Add `"sha": "<40-character commit SHA>"` to pin a version; otherwise both harnesses follow `ref`.
+- `skills` (optional): folders, relative to the plugin root, that each contain a `SKILL.md`. Without it, every skill under the plugin's `skills/` directory is used.
+
+To remove external skills, delete the entry (or the paths in `skills`). That one file drives both harnesses:
+- **Claude Code** reads `marketplace.json` directly.
+- **OpenCode**: `build_site.py` (run by `pages.yml`) fetches the skills and publishes them with a generated `index.json`. On a PR, `marketplace-check.yml` runs the same build to check that the repo, ref and skills exist.
+
+To check locally: `python .github/scripts/build_site.py --only <name>`.
+
+External skills don't need a `quiz.yaml`, because they are not stored in this repo.
+
 ## Quiz requirement
 
 Every skill must include a `quiz.yaml` alongside its `SKILL.md`. CI uses [docmetrics](https://github.com/mila-iqia/docmetrics) to verify that the skill content actually helps an LLM answer the questions — if the score doesn't improve when the skill is provided as context, the PR fails.
