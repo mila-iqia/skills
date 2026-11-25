@@ -69,8 +69,8 @@ Each skill's `version` is a hash of its content, so OpenCode only re-downloads s
 | `pytorch-opt-skills` | PyTorch optimization Skills (torch.compile, DataLoader, profiler) |
 
 `pytorch-opt-skills` is an external plugin that points to
-[srygaard/optimization-skills](https://github.com/srygaard/optimization-skills). Its skills are not copied into this repo.
-Its skills are not copied into this repo. Its entry in `marketplace.json` is described in [`.claude/marketplace.json`](.claude/marketplace.json) and generated.
+[srygaard/optimization-skills](https://github.com/srygaard/optimization-skills).
+Its skills are not copied into this repo. Its entry in `marketplace.json` is described in [`.claude-plugin/marketplace.json`](.claude/marketplace.json) fot the skills to be generated.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md#referencing-skills-from-another-repository).
 
